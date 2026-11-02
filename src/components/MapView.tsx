@@ -106,27 +106,27 @@ export const MapView: React.FC<MapViewProps> = ({
       <div className="mb-2 sm:mb-3 shrink-0 flex flex-col gap-1 sm:gap-1.5">
         <div className="flex items-center justify-between">
           <div>
-            <span className="font-headline font-bold text-[9px] sm:text-[10px] uppercase tracking-widest text-cyan-300 bg-indigo-950/80 px-2 py-0.5 rounded-full border border-cyan-400/40 leading-none">
+            <span className="font-headline font-bold text-[9px] sm:text-[10px] uppercase tracking-widest text-[#39D5E8] bg-[#29203D] px-2 py-0.5 rounded-full border border-[rgba(57,213,232,0.40)] leading-none">
               World 01 • Celestial Archipelago
             </span>
-            <h1 className="font-headline font-black text-lg sm:text-xl tracking-tight text-white mt-1 leading-none uppercase">
+            <h1 className="font-headline font-black text-lg sm:text-xl tracking-tight text-[#F8F5FF] mt-1 leading-none uppercase">
               THE FLOATING REALM
             </h1>
           </div>
           <div className="flex flex-col items-end">
-            <span className="text-[9px] uppercase font-headline font-bold text-violet-300 leading-none">
+            <span className="text-[9px] uppercase font-headline font-bold text-[#C6BDD9] leading-none">
               Progress
             </span>
-            <span className="font-headline font-black text-sm sm:text-base mt-0.5 text-cyan-300 leading-none">
+            <span className="font-headline font-black text-sm sm:text-base mt-0.5 text-[#39D5E8] leading-none">
               {completedLevels} / {totalLevels}
             </span>
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full h-2.5 sm:h-3 bg-[#0c1433] border border-indigo-400/40 p-0.5 relative overflow-hidden rounded-full mt-0.5">
+        <div className="w-full h-2.5 sm:h-3 bg-[#10152D] border border-[rgba(196,167,255,0.20)] p-0.5 relative overflow-hidden rounded-full mt-0.5">
           <div
-            className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 rounded-full shadow-[0_0_10px_rgba(34,211,238,0.7)] transition-all duration-500"
+            className="h-full bg-gradient-to-r from-[#39D5E8] via-[#579BFF] to-[#A855F7] rounded-full shadow-[0_0_10px_rgba(57,213,232,0.7)] transition-all duration-500"
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
@@ -135,19 +135,19 @@ export const MapView: React.FC<MapViewProps> = ({
       {/* Main Scrollable Level Map Container */}
       <div
         ref={containerRef}
-        className="relative flex-1 min-h-0 w-full bg-gradient-to-b from-[#162357] via-[#121c47] to-[#0e163b] border-2 border-indigo-400/50 rounded-2xl shadow-[0_4px_25px_rgba(59,130,246,0.25)] overflow-y-auto overflow-x-hidden p-3 sm:p-4 select-none scroll-smooth overscroll-contain"
+        className="relative flex-1 min-h-0 w-full bg-gradient-to-b from-[#211238] via-[#18102E] to-[#10152D] border-2 border-[rgba(196,167,255,0.25)] rounded-2xl shadow-[0_4px_25px_rgba(33,18,56,0.6)] overflow-y-auto overflow-x-hidden p-3 sm:p-4 select-none scroll-smooth overscroll-contain"
       >
         {/* Dynamic scroll indicator on map */}
-        <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-[9px] font-headline font-bold uppercase tracking-widest text-cyan-400 bg-indigo-950/85 border border-cyan-400/40 px-2.5 py-1 rounded-full shadow-md flex items-center gap-1.5 animate-pulse">
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-[9px] font-headline font-bold uppercase tracking-widest text-[#39D5E8] bg-[#29203D] border border-[rgba(57,213,232,0.40)] px-2.5 py-1 rounded-full shadow-md flex items-center gap-1.5 animate-pulse">
           <span>👑 Celestial Spire</span>
         </div>
 
         <div className="relative w-full" style={{ height: `${canvasHeight}px` }}>
           {/* Atmospheric Celestial Light Orbs */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-            <div className="absolute top-1/4 left-1/4 w-60 h-60 rounded-full bg-blue-600/10 blur-3xl" />
-            <div className="absolute bottom-1/4 right-1/4 w-60 h-60 rounded-full bg-purple-600/15 blur-3xl" />
-            <div className="absolute top-2/3 left-1/3 w-72 h-72 rounded-full bg-cyan-600/10 blur-3xl" />
+            <div className="absolute top-1/4 left-1/4 w-60 h-60 rounded-full bg-[#7138C8]/10 blur-3xl" />
+            <div className="absolute bottom-1/4 right-1/4 w-60 h-60 rounded-full bg-[#A855F7]/10 blur-3xl" />
+            <div className="absolute top-2/3 left-1/3 w-72 h-72 rounded-full bg-[#39D5E8]/10 blur-3xl" />
           </div>
 
           {/* Winding Path SVG Layer */}
@@ -160,11 +160,11 @@ export const MapView: React.FC<MapViewProps> = ({
             <path
               d={pathD}
               fill="none"
-              stroke="#6366f1"
+              stroke="#7138C8"
               strokeDasharray="2 1.5"
               vectorEffect="non-scaling-stroke"
               strokeWidth="4"
-              className="opacity-60"
+              className="opacity-70"
             />
           </svg>
 
@@ -189,8 +189,8 @@ export const MapView: React.FC<MapViewProps> = ({
                           size={11}
                           className={`${
                             sIndex <= lvl.stars
-                              ? 'text-amber-400 fill-amber-400 drop-shadow-[0_0_5px_rgba(251,191,36,0.8)]'
-                              : 'text-indigo-900 fill-indigo-950/60'
+                              ? 'text-[#F5C76B] fill-[#F5C76B] drop-shadow-[0_0_5px_rgba(245,199,107,0.8)]'
+                              : 'text-[#29203D] fill-[#18102E]'
                           }`}
                         />
                       ))}
@@ -199,7 +199,7 @@ export const MapView: React.FC<MapViewProps> = ({
 
                   {/* Boss Indicator Header */}
                   {lvl.isBoss && (
-                    <div className="flex items-center gap-1 mb-1.5 bg-rose-950/95 text-rose-300 px-2 py-0.5 font-headline font-bold text-[8px] uppercase rounded-full border border-rose-500/50 shadow-md">
+                    <div className="flex items-center gap-1 mb-1.5 bg-[#29203D] text-[#FB7185] px-2 py-0.5 font-headline font-bold text-[8px] uppercase rounded-full border border-[#F43F5E]/50 shadow-md">
                       <ShieldAlert size={9} /> Boss
                     </div>
                   )}
@@ -210,16 +210,16 @@ export const MapView: React.FC<MapViewProps> = ({
                     whileTap={{ scale: 0.94 }}
                     className={`font-headline font-black rounded-2xl flex items-center justify-center border-2 shadow-lg transition-all ${nodeClass} ${
                       lvl.isLocked
-                        ? 'bg-[#0f183b] text-violet-400/50 border-indigo-900/60'
+                        ? 'bg-[#211238] text-[#C6BDD9]/40 border-[rgba(196,167,255,0.15)]'
                         : lvl.isBoss
-                        ? 'bg-gradient-to-br from-rose-600 via-purple-700 to-indigo-800 text-white border-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.45)]'
+                        ? 'bg-gradient-to-br from-[#F43F5E] via-[#7138C8] to-[#211238] text-white border-[#FB7185] shadow-[0_0_20px_rgba(244,63,94,0.45)]'
                         : lvl.stars > 0
-                        ? 'bg-gradient-to-br from-blue-500 to-indigo-700 text-white border-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.35)]'
-                        : 'bg-gradient-to-br from-amber-400 to-yellow-500 text-slate-950 border-amber-200 shadow-[0_0_12px_rgba(251,191,36,0.35)]'
+                        ? 'bg-gradient-to-br from-[#7138C8] via-[#A855F7] to-[#579BFF] text-white border-[rgba(196,167,255,0.45)] shadow-[0_0_12px_rgba(113,56,200,0.35)]'
+                        : 'bg-gradient-to-br from-[#F5C76B] via-[#FDE68A] to-[#F18BCB] text-[#211238] border-[#FEF3C7] shadow-[0_0_16px_rgba(245,199,107,0.45)] ring-2 ring-[#F5C76B]'
                     }`}
                   >
                     {lvl.isLocked ? (
-                      <Lock size={lvl.isBoss ? 20 : 16} className="text-violet-400/60" />
+                      <Lock size={lvl.isBoss ? 20 : 16} className="text-[#C6BDD9]/40" />
                     ) : lvl.isBoss ? (
                       <span>🐉</span>
                     ) : (
@@ -228,10 +228,10 @@ export const MapView: React.FC<MapViewProps> = ({
                   </motion.div>
 
                   {/* Name Tag */}
-                  <span className={`font-headline font-bold text-[9px] mt-1.5 px-2 py-0.5 rounded-full border whitespace-nowrap group-hover:text-cyan-300 transition-colors ${
+                  <span className={`font-headline font-bold text-[9px] mt-1.5 px-2 py-0.5 rounded-full border whitespace-nowrap group-hover:text-[#39D5E8] transition-colors ${
                     lvl.isBoss 
-                      ? 'bg-rose-950/90 border-rose-500/40 text-rose-200' 
-                      : 'bg-[#0f173b]/90 border-indigo-400/40 text-violet-200'
+                      ? 'bg-[#29203D]/95 border-[#F43F5E]/40 text-[#FB7185]' 
+                      : 'bg-[#29203D]/95 border-[rgba(196,167,255,0.25)] text-[#C6BDD9]'
                   }`}>
                     {lvl.name}
                   </span>
@@ -243,17 +243,17 @@ export const MapView: React.FC<MapViewProps> = ({
       </div>
 
       {/* Map Legend */}
-      <div className="mt-2 shrink-0 flex items-center justify-between px-2 text-[10px] sm:text-[11px] font-headline font-bold text-violet-300">
+      <div className="mt-2 shrink-0 flex items-center justify-between px-2 text-[10px] sm:text-[11px] font-headline font-bold text-[#C6BDD9]">
         <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-blue-500 border border-cyan-300" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#7138C8] border border-[rgba(196,167,255,0.40)]" />
           <span>Completed</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-rose-600 border border-rose-400" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#F43F5E] border border-[#FB7185]" />
           <span>Boss Stage</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#0f183b] border border-indigo-800" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#211238] border border-[rgba(196,167,255,0.15)]" />
           <span>Locked</span>
         </div>
       </div>
@@ -262,7 +262,7 @@ export const MapView: React.FC<MapViewProps> = ({
       <AnimatePresence>
         {selectedLevel && (
           <div
-            className="fixed inset-0 z-[100] bg-[#090f2b]/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 select-none touch-manipulation"
+            className="fixed inset-0 z-[100] bg-[#10152D]/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 select-none touch-manipulation"
             onClick={(e) => {
               if (e.target === e.currentTarget) setSelectedLevel(null);
             }}
@@ -271,35 +271,35 @@ export const MapView: React.FC<MapViewProps> = ({
               initial={{ scale: 0.9, opacity: 0, y: 15 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 15 }}
-              className="bg-gradient-to-b from-[#18265e] via-[#141f4d] to-[#0f173b] border-2 border-indigo-400/60 rounded-2xl shadow-[0_10px_35px_rgba(59,130,246,0.35)] w-full max-w-xs sm:max-w-sm p-4 sm:p-6 relative flex flex-col gap-3 sm:gap-4 text-left max-h-[90dvh] overflow-y-auto allow-scroll"
+              className="bg-gradient-to-b from-[#29203D] via-[#211238] to-[#10152D] border-2 border-[rgba(196,167,255,0.30)] rounded-2xl shadow-[0_10px_35px_rgba(33,18,56,0.65)] w-full max-w-xs sm:max-w-sm p-4 sm:p-6 relative flex flex-col gap-3 sm:gap-4 text-left max-h-[90dvh] overflow-y-auto allow-scroll"
               onClick={(e) => e.stopPropagation()}
             >
               <button
-                className="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-indigo-950/80 border border-indigo-400/40 text-violet-300 hover:text-white flex items-center justify-center cursor-pointer transition-colors"
+                className="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-[#211238] border border-[rgba(196,167,255,0.25)] text-[#C6BDD9] hover:text-white flex items-center justify-center cursor-pointer transition-colors"
                 onClick={() => setSelectedLevel(null)}
               >
                 <X size={16} />
               </button>
 
               <div>
-                <span className="font-headline font-bold text-[10px] uppercase tracking-widest text-cyan-300">
+                <span className="font-headline font-bold text-[10px] uppercase tracking-widest text-[#39D5E8]">
                   Stage Details
                 </span>
-                <h2 className="font-headline font-black text-xl sm:text-2xl text-white leading-tight mt-0.5">
+                <h2 className="font-headline font-black text-xl sm:text-2xl text-[#F8F5FF] leading-tight mt-0.5">
                   Stage {selectedLevel.id}: {selectedLevel.name}
                 </h2>
               </div>
 
               {/* Star Progress */}
-              <div className="flex justify-center gap-3 py-3 bg-[#0d1538] border border-indigo-500/40 rounded-xl">
+              <div className="flex justify-center gap-3 py-3 bg-[#211238] border border-[rgba(196,167,255,0.20)] rounded-xl">
                 {[1, 2, 3].map((sIndex) => (
                   <Star
                     key={`modal-star-${selectedLevel.id}-${sIndex}`}
                     size={30}
                     className={`${
                       sIndex <= selectedLevel.stars
-                        ? 'text-amber-400 fill-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]'
-                        : 'text-indigo-950 fill-indigo-950/60'
+                        ? 'text-[#F5C76B] fill-[#F5C76B] drop-shadow-[0_0_8px_rgba(245,199,107,0.8)]'
+                        : 'text-[#29203D] fill-[#18102E]'
                     }`}
                   />
                 ))}
@@ -307,22 +307,22 @@ export const MapView: React.FC<MapViewProps> = ({
 
               {/* Battle Stats */}
               <div className="flex flex-col gap-2 text-xs">
-                <div className="flex justify-between py-1.5 border-b border-indigo-500/30">
-                  <span className="font-bold text-violet-300">Objective</span>
-                  <span className="font-headline font-black text-white uppercase flex items-center gap-1">
+                <div className="flex justify-between py-1.5 border-b border-[rgba(196,167,255,0.15)]">
+                  <span className="font-bold text-[#C6BDD9]">Objective</span>
+                  <span className="font-headline font-black text-[#F8F5FF] uppercase flex items-center gap-1">
                     {selectedLevel.objectiveTarget} {selectedLevel.objectiveType}s
                   </span>
                 </div>
-                <div className="flex justify-between py-1.5 border-b border-indigo-500/30">
-                  <span className="font-bold text-violet-300">Recommended Power</span>
-                  <span className="font-headline font-black text-white">
+                <div className="flex justify-between py-1.5 border-b border-[rgba(196,167,255,0.15)]">
+                  <span className="font-bold text-[#C6BDD9]">Recommended Power</span>
+                  <span className="font-headline font-black text-[#F8F5FF]">
                     {selectedLevel.recommendedPower.toLocaleString()}
                   </span>
                 </div>
-                <div className="flex justify-between py-1.5 border-b border-indigo-500/30">
-                  <span className="font-bold text-violet-300">Potential Rewards</span>
-                  <span className="font-headline font-black text-cyan-300 flex items-center gap-1">
-                    <Award size={13} className="text-amber-400" />
+                <div className="flex justify-between py-1.5 border-b border-[rgba(196,167,255,0.15)]">
+                  <span className="font-bold text-[#C6BDD9]">Potential Rewards</span>
+                  <span className="font-headline font-black text-[#39D5E8] flex items-center gap-1">
+                    <Award size={13} className="text-[#F5C76B]" />
                     {selectedLevel.loot}
                   </span>
                 </div>
@@ -330,10 +330,10 @@ export const MapView: React.FC<MapViewProps> = ({
 
               {/* Launch Action */}
               <button
-                className="w-full py-3.5 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-headline font-black text-sm uppercase tracking-wider rounded-xl shadow-[0_4px_20px_rgba(251,191,36,0.4)] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2 mt-1"
+                className="w-full py-3.5 bg-gradient-to-r from-[#F5C76B] via-[#FDE68A] to-[#F18BCB] hover:brightness-110 text-[#211238] font-headline font-black text-sm uppercase tracking-wider rounded-xl shadow-[0_4px_20px_rgba(245,199,107,0.4)] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2 mt-1"
                 onClick={() => launchLevel(selectedLevel.id)}
               >
-                <Play size={16} className="fill-current" />
+                <Play size={16} className="fill-current text-[#211238]" />
                 Launch Stage
               </button>
             </motion.div>
@@ -345,7 +345,7 @@ export const MapView: React.FC<MapViewProps> = ({
       <AnimatePresence>
         {selectedBossLevel && (
           <div
-            className="fixed inset-0 z-[100] bg-[#090f2b]/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 select-none touch-manipulation"
+            className="fixed inset-0 z-[100] bg-[#10152D]/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 select-none touch-manipulation"
             onClick={(e) => {
               if (e.target === e.currentTarget) setSelectedBossLevel(null);
             }}
@@ -354,11 +354,11 @@ export const MapView: React.FC<MapViewProps> = ({
               initial={{ scale: 0.9, opacity: 0, y: 15 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 15 }}
-              className="bg-gradient-to-b from-[#18265e] via-[#141f4d] to-[#0f173b] border-2 border-rose-500/75 rounded-2xl shadow-[0_10px_35px_rgba(244,63,94,0.35)] w-full max-w-xs sm:max-w-sm p-4 sm:p-6 relative flex flex-col gap-3 sm:gap-4 text-left max-h-[90dvh] overflow-y-auto allow-scroll"
+              className="bg-gradient-to-b from-[#29203D] via-[#211238] to-[#10152D] border-2 border-[#F43F5E]/60 rounded-2xl shadow-[0_10px_35px_rgba(244,63,94,0.35)] w-full max-w-xs sm:max-w-sm p-4 sm:p-6 relative flex flex-col gap-3 sm:gap-4 text-left max-h-[90dvh] overflow-y-auto allow-scroll"
               onClick={(e) => e.stopPropagation()}
             >
               <button
-                className="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-indigo-950/80 border border-indigo-400/40 text-violet-300 hover:text-white flex items-center justify-center cursor-pointer transition-colors"
+                className="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-[#211238] border border-[rgba(196,167,255,0.25)] text-[#C6BDD9] hover:text-white flex items-center justify-center cursor-pointer transition-colors"
                 onClick={() => setSelectedBossLevel(null)}
               >
                 <X size={16} />
@@ -366,43 +366,43 @@ export const MapView: React.FC<MapViewProps> = ({
               <div className="flex items-center gap-2">
                 <span className="text-3xl">🐉</span>
                 <div>
-                  <span className="font-headline font-bold text-[10px] uppercase tracking-widest text-rose-400">
+                  <span className="font-headline font-bold text-[10px] uppercase tracking-widest text-[#FB7185]">
                     Boss Battle Challenge
                   </span>
-                  <h2 className="font-headline font-black text-xl text-white leading-tight mt-0.5">
+                  <h2 className="font-headline font-black text-xl text-[#F8F5FF] leading-tight mt-0.5">
                     Stage {selectedBossLevel.id}: {selectedBossLevel.name}
                   </h2>
                 </div>
               </div>
 
-              <div className="w-full h-32 bg-gradient-to-tr from-rose-950 to-indigo-950 border border-rose-500/50 rounded-xl flex flex-col items-center justify-center p-4 text-center relative overflow-hidden">
+              <div className="w-full h-32 bg-gradient-to-tr from-[#211238] to-[#29203D] border border-[#F43F5E]/40 rounded-xl flex flex-col items-center justify-center p-4 text-center relative overflow-hidden">
                 <span className="text-5xl animate-bounce">🐲</span>
-                <span className="text-[10px] font-headline font-bold uppercase tracking-wider text-rose-300 mt-2 bg-rose-950/80 px-2.5 py-0.5 rounded-full border border-rose-500/50">
+                <span className="text-[10px] font-headline font-bold uppercase tracking-wider text-[#FB7185] mt-2 bg-[#211238]/90 px-2.5 py-0.5 rounded-full border border-[#F43F5E]/40">
                   Guardian of floating crystals
                 </span>
               </div>
 
-              <p className="text-xs text-violet-200 font-medium leading-relaxed">
+              <p className="text-xs text-[#C6BDD9] font-medium leading-relaxed">
                 Clear all match objectives in this Boss Stage to collect double experience, epic dragon aether fragments, and gold rewards!
               </p>
 
-              <div className="flex flex-col gap-2 text-xs py-1.5 px-3 bg-[#0d1538] border border-indigo-500/40 rounded-xl">
-                <div className="flex justify-between border-b border-indigo-500/25 pb-1">
-                  <span className="font-headline font-bold text-[10px] uppercase text-violet-300">Objective Target</span>
-                  <span className="font-headline font-black text-xs text-rose-400">
+              <div className="flex flex-col gap-2 text-xs py-1.5 px-3 bg-[#211238] border border-[rgba(196,167,255,0.20)] rounded-xl">
+                <div className="flex justify-between border-b border-[rgba(196,167,255,0.15)] pb-1">
+                  <span className="font-headline font-bold text-[10px] uppercase text-[#C6BDD9]">Objective Target</span>
+                  <span className="font-headline font-black text-xs text-[#FB7185]">
                     Match {selectedBossLevel.objectiveTarget} {selectedBossLevel.objectiveType}s
                   </span>
                 </div>
                 <div className="flex justify-between pt-1">
-                  <span className="font-headline font-bold text-[10px] uppercase text-violet-300">Potential Rewards</span>
-                  <span className="font-headline font-black text-xs text-amber-400">
+                  <span className="font-headline font-bold text-[10px] uppercase text-[#C6BDD9]">Potential Rewards</span>
+                  <span className="font-headline font-black text-xs text-[#F5C76B]">
                     💎 {selectedBossLevel.loot}
                   </span>
                 </div>
               </div>
 
               <button
-                className="w-full py-3.5 bg-gradient-to-r from-rose-600 via-purple-700 to-indigo-800 hover:from-rose-500 hover:to-indigo-700 text-white font-headline font-black text-sm uppercase tracking-wider rounded-xl shadow-[0_4px_20px_rgba(244,63,94,0.4)] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2 mt-1"
+                className="w-full py-3.5 bg-gradient-to-r from-[#F43F5E] via-[#7138C8] to-[#A855F7] hover:brightness-110 text-white font-headline font-black text-sm uppercase tracking-wider rounded-xl shadow-[0_4px_20px_rgba(244,63,94,0.4)] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2 mt-1"
                 onClick={() => launchLevel(selectedBossLevel.id)}
               >
                 <Play size={16} className="fill-current" />

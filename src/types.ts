@@ -61,6 +61,15 @@ export interface Mission {
   type?: 'match_gems' | 'clear_levels' | 'use_booster' | 'daily_login' | 'reach_score' | 'perfect_level';
 }
 
+export interface StreakBonus {
+  days: number;
+  title: string;
+  coins: number;
+  diamonds: number;
+  boosters?: Partial<{ hammer: number; shuffle: number; rainbow: number; hint: number; undo: number }>;
+  badge: string;
+}
+
 export interface DailyLoginReward {
   day: number;
   rewardDescription: string;
@@ -84,7 +93,9 @@ export interface GameState {
   losses: number;
   gamesPlayed: number;
   winStreak: number;
+  dailyStreak?: number;
   totalMatchesMade: number;
+  maxCombo?: number;
   levelsWithoutBoosters: number;
   activeTab: 'home' | 'map' | 'game' | 'settings';
   levels: Level[];

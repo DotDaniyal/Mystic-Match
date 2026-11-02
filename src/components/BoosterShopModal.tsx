@@ -202,7 +202,7 @@ export const BoosterShopModal: React.FC<BoosterShopModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-4 bg-[#070c24]/85 backdrop-blur-md select-none touch-manipulation"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-4 bg-[#10152D]/85 backdrop-blur-md select-none touch-manipulation"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               triggerHaptic('click');
@@ -218,11 +218,11 @@ export const BoosterShopModal: React.FC<BoosterShopModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-            className="relative w-full max-w-sm sm:max-w-md bg-gradient-to-b from-[#18265e] via-[#141f4d] to-[#0f173b] border-2 border-indigo-400/70 p-3 sm:p-4 md:p-5 shadow-[0_12px_45px_rgba(59,130,246,0.35)] rounded-2xl text-white max-h-[92dvh] flex flex-col overflow-hidden"
+            className="relative w-full max-w-sm sm:max-w-md bg-gradient-to-b from-[#29203D] via-[#211238] to-[#10152D] border-2 border-[rgba(196,167,255,0.30)] p-3 sm:p-4 md:p-5 shadow-[0_12px_45px_rgba(113,56,200,0.35)] rounded-2xl text-[#F8F5FF] max-h-[92dvh] flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header: Title, Back, Coin Counter, and Close Button */}
-            <div className="flex items-center justify-between pb-2.5 border-b border-indigo-400/30 shrink-0 gap-2">
+            <div className="flex items-center justify-between pb-2.5 border-b border-[rgba(196,167,255,0.20)] shrink-0 gap-2">
               <div className="flex items-center gap-2 min-w-0">
                 {/* Back button */}
                 <button
@@ -231,27 +231,27 @@ export const BoosterShopModal: React.FC<BoosterShopModalProps> = ({
                     triggerHaptic('click');
                     onClose();
                   }}
-                  className="w-8 h-8 rounded-xl bg-indigo-950/80 border border-indigo-400/40 text-violet-300 hover:text-white flex items-center justify-center cursor-pointer transition-colors active:scale-95 shrink-0"
+                  className="w-8 h-8 rounded-xl bg-[#211238] border border-[rgba(196,167,255,0.25)] text-[#C6BDD9] hover:text-[#F8F5FF] hover:border-[#39D5E8]/50 flex items-center justify-center cursor-pointer transition-colors active:scale-95 shrink-0"
                   title="Return to previous screen"
                   aria-label="Back"
                 >
                   <ArrowLeft size={16} />
                 </button>
 
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-slate-950 flex items-center justify-center font-black shadow-md shrink-0">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#F5C76B] to-[#F18BCB] text-[#211238] flex items-center justify-center font-black shadow-md shrink-0">
                   <ShoppingBag size={18} />
                 </div>
                 <div className="min-w-0">
-                  <h3 id="shop-modal-title" className="text-sm sm:text-base font-headline font-black uppercase text-white leading-none truncate">
+                  <h3 id="shop-modal-title" className="text-sm sm:text-base font-headline font-black uppercase text-[#F8F5FF] leading-none truncate">
                     Booster Emporium
                   </h3>
-                  <p className="text-[9px] text-indigo-300 mt-0.5 truncate">Equip mystical artifacts</p>
+                  <p className="text-[9px] text-[#C6BDD9] mt-0.5 truncate">Equip mystical artifacts</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-1.5 shrink-0">
                 {/* Coins Counter Badge */}
-                <div className="flex items-center gap-1 bg-[#0b1433] px-2 py-1 rounded-xl border border-amber-400/50 text-xs font-headline font-black text-amber-300 shadow-inner">
+                <div className="flex items-center gap-1 bg-[#211238] px-2 py-1 rounded-xl border border-[#F5C76B]/60 text-xs font-headline font-black text-[#F5C76B] shadow-inner">
                   <span>🪙</span>
                   <span>{currentCoins.toLocaleString()}</span>
                 </div>
@@ -263,7 +263,7 @@ export const BoosterShopModal: React.FC<BoosterShopModalProps> = ({
                     triggerHaptic('click');
                     onClose();
                   }}
-                  className="w-8 h-8 rounded-full bg-indigo-950/80 border border-indigo-400/40 text-violet-300 hover:text-white hover:bg-rose-950/50 flex items-center justify-center cursor-pointer transition-colors active:scale-95"
+                  className="w-8 h-8 rounded-full bg-[#211238] border border-[rgba(196,167,255,0.25)] text-[#C6BDD9] hover:text-[#F8F5FF] hover:border-rose-400/60 flex items-center justify-center cursor-pointer transition-colors active:scale-95"
                   title="Close Emporium"
                   aria-label="Close Emporium"
                 >
@@ -273,14 +273,14 @@ export const BoosterShopModal: React.FC<BoosterShopModalProps> = ({
             </div>
 
             {/* Quick Inventory Strip: Live Booster Counts */}
-            <div className="py-2 px-2.5 bg-[#0e163b]/80 border border-indigo-500/30 rounded-xl my-2 shrink-0 flex items-center justify-between text-[9px] font-headline font-bold text-violet-200 flex-wrap gap-1">
-              <span className="text-amber-300 uppercase tracking-wider text-[8px] font-black">Equipped:</span>
+            <div className="py-2 px-2.5 bg-[#211238]/90 border border-[rgba(196,167,255,0.20)] rounded-xl my-2 shrink-0 flex items-center justify-between text-[9px] font-headline font-bold text-[#C6BDD9] flex-wrap gap-1">
+              <span className="text-[#F5C76B] uppercase tracking-wider text-[8px] font-black">Equipped:</span>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="flex items-center gap-0.5" title="Hints">💡 <strong className="text-amber-300">{boosters.hint ?? 0}</strong></span>
-                <span className="flex items-center gap-0.5" title="Shuffles">🔄 <strong className="text-purple-300">{boosters.shuffle ?? 0}</strong></span>
-                <span className="flex items-center gap-0.5" title="Undos">⏪ <strong className="text-cyan-300">{boosters.undo ?? 0}</strong></span>
-                <span className="flex items-center gap-0.5" title="Hammers">🔨 <strong className="text-amber-300">{boosters.hammer ?? 0}</strong></span>
-                <span className="flex items-center gap-0.5" title="Rainbows">🌈 <strong className="text-pink-300">{boosters.rainbow ?? 0}</strong></span>
+                <span className="flex items-center gap-0.5" title="Hints">💡 <strong className="text-[#F5C76B]">{boosters.hint ?? 0}</strong></span>
+                <span className="flex items-center gap-0.5" title="Shuffles">🔄 <strong className="text-[#A855F7]">{boosters.shuffle ?? 0}</strong></span>
+                <span className="flex items-center gap-0.5" title="Undos">⏪ <strong className="text-[#39D5E8]">{boosters.undo ?? 0}</strong></span>
+                <span className="flex items-center gap-0.5" title="Hammers">🔨 <strong className="text-[#F5C76B]">{boosters.hammer ?? 0}</strong></span>
+                <span className="flex items-center gap-0.5" title="Rainbows">🌈 <strong className="text-[#F18BCB]">{boosters.rainbow ?? 0}</strong></span>
               </div>
             </div>
 
@@ -313,38 +313,38 @@ export const BoosterShopModal: React.FC<BoosterShopModalProps> = ({
                     key={item.id}
                     className={`p-2.5 sm:p-3 rounded-xl border transition-all flex items-center justify-between gap-2.5 ${
                       isJustPurchased
-                        ? 'bg-emerald-950/60 border-emerald-400/80 shadow-[0_0_15px_rgba(52,211,153,0.3)]'
+                        ? 'bg-emerald-950/70 border-emerald-400/80 shadow-[0_0_15px_rgba(52,211,153,0.3)]'
                         : isBundle
-                        ? 'bg-gradient-to-r from-[#24174d] via-[#1a1b4d] to-[#12224d] border-amber-400/60 shadow-[0_0_15px_rgba(251,191,36,0.2)]'
-                        : 'bg-[#11193b] border-indigo-400/40 hover:border-indigo-300'
+                        ? 'bg-gradient-to-r from-[#331d56] via-[#29203D] to-[#211238] border-[#F5C76B]/60 shadow-[0_0_15px_rgba(245,199,107,0.25)]'
+                        : 'bg-[#29203D] border-[rgba(196,167,255,0.20)] hover:border-[#7138C8]/60'
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div
                         className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 border ${
                           isBundle
-                            ? 'bg-gradient-to-br from-amber-400 to-pink-500 border-amber-300 text-2xl shadow-md'
-                            : 'bg-[#0b1330] border-indigo-400/40'
+                            ? 'bg-gradient-to-br from-[#F5C76B] to-[#F18BCB] border-[#F5C76B] text-[#211238] text-2xl shadow-md'
+                            : 'bg-[#211238] border-[rgba(196,167,255,0.25)]'
                         }`}
                       >
                         {item.icon}
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <h4 className="font-headline font-black text-xs sm:text-sm text-white truncate leading-none">
+                          <h4 className="font-headline font-black text-xs sm:text-sm text-[#F8F5FF] truncate leading-none">
                             {item.name}
                           </h4>
                           {isBundle ? (
-                            <span className="bg-amber-400 text-slate-950 text-[8px] font-black uppercase px-1.5 py-0.2 rounded font-headline leading-none">
+                            <span className="bg-[#F5C76B] text-[#211238] text-[8px] font-black uppercase px-1.5 py-0.2 rounded font-headline leading-none">
                               Save 20%
                             </span>
                           ) : (
-                            <span className="text-[8px] font-bold text-cyan-300 bg-cyan-950/70 border border-cyan-500/40 px-1.5 py-0.2 rounded font-headline leading-none">
+                            <span className="text-[8px] font-bold text-[#39D5E8] bg-[#39D5E8]/10 border border-[#39D5E8]/40 px-1.5 py-0.2 rounded font-headline leading-none">
                               Owned: {owned}
                             </span>
                           )}
                         </div>
-                        <p className="text-[9px] sm:text-[10px] text-indigo-300 line-clamp-2 mt-0.5 leading-snug">
+                        <p className="text-[9px] sm:text-[10px] text-[#C6BDD9] line-clamp-2 mt-0.5 leading-snug">
                           {item.description}
                         </p>
                       </div>
@@ -359,9 +359,9 @@ export const BoosterShopModal: React.FC<BoosterShopModalProps> = ({
                           ? 'bg-emerald-400 text-slate-950'
                           : canAfford
                           ? isBundle
-                            ? 'bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 hover:brightness-110 shadow-[0_2px_10px_rgba(251,191,36,0.3)]'
-                            : 'bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 hover:brightness-110 shadow-[0_2px_10px_rgba(34,211,238,0.3)]'
-                          : 'bg-indigo-950 text-indigo-400 border border-indigo-500/30 hover:border-amber-400/40'
+                            ? 'bg-gradient-to-r from-[#F5C76B] to-[#F18BCB] text-[#211238] hover:brightness-110 shadow-[0_2px_12px_rgba(245,199,107,0.35)]'
+                            : 'bg-gradient-to-r from-[#7138C8] to-[#A855F7] text-[#F8F5FF] hover:brightness-110 shadow-[0_2px_12px_rgba(113,56,200,0.35)]'
+                          : 'bg-[#211238] text-[#C6BDD9]/40 border border-[rgba(196,167,255,0.15)] hover:border-[#F5C76B]/40'
                       }`}
                       title={canAfford ? `Purchase ${item.name}` : `Need ${cost - currentCoins} more coins`}
                     >
@@ -384,8 +384,8 @@ export const BoosterShopModal: React.FC<BoosterShopModalProps> = ({
             </div>
 
             {/* Footer note */}
-            <div className="pt-2 mt-1 border-t border-indigo-400/20 text-center shrink-0">
-              <p className="text-[9px] text-indigo-300">
+            <div className="pt-2 mt-1 border-t border-[rgba(196,167,255,0.20)] text-center shrink-0">
+              <p className="text-[9px] text-[#C6BDD9]">
                 ⚡ Boosters never expire and persist across all play sessions.
               </p>
             </div>
@@ -403,13 +403,13 @@ export const BoosterShopModal: React.FC<BoosterShopModalProps> = ({
         onConfirm={handleConfirmPurchase}
         onCancel={() => setIsConfirmOpen(false)}
         isDestructive={false}
-        icon={<Sparkles className="text-amber-400" size={26} />}
+        icon={<Sparkles className="text-[#F5C76B]" size={26} />}
       />
 
       {/* Insufficient Coins Modal (High z-index to overlay shop safely) */}
       {isInsufficientOpen && (
         <div
-          className="fixed inset-0 z-[160] flex items-center justify-center p-4 bg-[#070c24]/90 backdrop-blur-md"
+          className="fixed inset-0 z-[160] flex items-center justify-center p-4 bg-[#10152D]/90 backdrop-blur-md"
           role="dialog"
           aria-modal="true"
           onClick={() => setIsInsufficientOpen(false)}
@@ -418,22 +418,22 @@ export const BoosterShopModal: React.FC<BoosterShopModalProps> = ({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-gradient-to-b from-[#241530] via-[#1a133b] to-[#120f2e] border-2 border-amber-400/80 p-5 max-w-xs w-full text-center rounded-2xl shadow-[0_10px_35px_rgba(251,191,36,0.3)]"
+            className="bg-gradient-to-b from-[#29203D] via-[#211238] to-[#10152D] border-2 border-[#F5C76B]/80 p-5 max-w-xs w-full text-center rounded-2xl shadow-[0_10px_35px_rgba(245,199,107,0.3)]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-12 h-12 rounded-full bg-amber-500/20 border border-amber-400/50 flex items-center justify-center text-amber-300 mx-auto mb-3">
+            <div className="w-12 h-12 rounded-full bg-[#F5C76B]/20 border border-[#F5C76B]/50 flex items-center justify-center text-[#F5C76B] mx-auto mb-3">
               <AlertCircle size={24} />
             </div>
-            <h4 className="text-base font-headline font-black uppercase text-amber-300 mb-1">
+            <h4 className="text-base font-headline font-black uppercase text-[#F5C76B] mb-1">
               Not Enough Coins!
             </h4>
-            <p className="text-xs text-violet-200 mb-3 leading-relaxed">
-              You currently have <span className="font-bold text-amber-300">{currentCoins.toLocaleString()} 🪙</span>, but{' '}
-              <span className="font-bold text-white">{selectedItem?.name}</span> costs{' '}
-              <span className="font-bold text-amber-300">{(selectedItem?.costCoins ?? selectedItem?.coinCost ?? 0).toLocaleString()} 🪙</span>.
+            <p className="text-xs text-[#C6BDD9] mb-3 leading-relaxed">
+              You currently have <span className="font-bold text-[#F5C76B]">{currentCoins.toLocaleString()} 🪙</span>, but{' '}
+              <span className="font-bold text-[#F8F5FF]">{selectedItem?.name}</span> costs{' '}
+              <span className="font-bold text-[#F5C76B]">{(selectedItem?.costCoins ?? selectedItem?.coinCost ?? 0).toLocaleString()} 🪙</span>.
             </p>
-            <p className="text-[10px] text-amber-200/80 mb-4">
-              You need <span className="font-bold text-white">{Math.max(0, (selectedItem?.costCoins ?? selectedItem?.coinCost ?? 0) - currentCoins)}</span> more coins.
+            <p className="text-[10px] text-[#C6BDD9]/80 mb-4">
+              You need <span className="font-bold text-[#F8F5FF]">{Math.max(0, (selectedItem?.costCoins ?? selectedItem?.coinCost ?? 0) - currentCoins)}</span> more coins.
             </p>
 
             <div className="flex flex-col gap-2">
@@ -446,7 +446,7 @@ export const BoosterShopModal: React.FC<BoosterShopModalProps> = ({
                     onClose();
                     onGoToEarnCoins();
                   }}
-                  className="w-full py-2.5 bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 rounded-xl font-headline text-xs font-black uppercase tracking-wider shadow-md hover:brightness-110 cursor-pointer flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 bg-gradient-to-r from-[#F5C76B] via-[#FDE68A] to-[#F18BCB] text-[#211238] rounded-xl font-headline text-xs font-black uppercase tracking-wider shadow-md hover:brightness-110 cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <Coins size={14} />
                   <span>Earn Coins via Quests</span>
@@ -459,7 +459,7 @@ export const BoosterShopModal: React.FC<BoosterShopModalProps> = ({
                   triggerHaptic('click');
                   setIsInsufficientOpen(false);
                 }}
-                className="w-full py-2 bg-[#12193d] border border-indigo-400/40 rounded-xl font-headline text-xs font-bold uppercase text-indigo-300 hover:text-white cursor-pointer"
+                className="w-full py-2 bg-[#211238] border border-[rgba(196,167,255,0.25)] rounded-xl font-headline text-xs font-bold uppercase text-[#C6BDD9] hover:text-[#F8F5FF] cursor-pointer"
               >
                 Dismiss
               </button>

@@ -15,7 +15,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { GameState, GemType, BoardGem, ActiveLevelSession, BoosterType } from '../types';
-import { playComboChime } from '../audio';
+import { playComboChime, playComboFinishSound } from '../audio';
 import { ConfirmationModal } from './ConfirmationModal';
 
 interface GameViewProps {
@@ -27,7 +27,9 @@ interface GameViewProps {
   onUpdateBoosters: (boosters: GameState['boostersCount']) => void;
   onSetLevelInProgress?: (inProgress: boolean) => void;
   onOpenShop?: () => void;
-  onMatchMade?: (count: number) => void;
+  onMatchMade?: (count: number, comboMultiplier?: number) => void;
+  comboMultiplier?: number;
+  onComboChange?: (multiplier: number) => void;
 }
 
 const BOARD_SIZE = 8;
@@ -36,58 +38,58 @@ const ACTIVE_LEVEL_STORAGE_KEY = 'mystic_match_active_level_v1';
 
 const GEM_STYLES: Record<GemType, { bg: string; icon: string; text: string; shadow: string; glow: string; border: string; colorHex: string }> = {
   ruby: {
-    bg: 'from-rose-500 via-red-500 to-rose-700',
+    bg: 'from-[#FB7185] via-[#F43F5E] to-[#BE123C]',
     icon: '❤️',
     text: 'text-white',
-    shadow: 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.7),0_4px_12px_rgba(244,63,94,0.6)]',
-    glow: 'drop-shadow-[0_0_8px_rgba(244,63,94,0.9)]',
-    border: 'border-rose-300/70',
-    colorHex: '#f43f5e'
+    shadow: 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.7),0_4px_12px_rgba(244,63,94,0.5)]',
+    glow: 'drop-shadow-[0_0_8px_rgba(244,63,94,0.85)]',
+    border: 'border-[#FECDD3]/80',
+    colorHex: '#F43F5E'
   },
   sapphire: {
-    bg: 'from-sky-400 via-blue-500 to-indigo-600',
+    bg: 'from-[#70A8FF] via-[#579BFF] to-[#2563EB]',
     icon: '💎',
     text: 'text-white',
-    shadow: 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.7),0_4px_12px_rgba(59,130,246,0.6)]',
-    glow: 'drop-shadow-[0_0_8px_rgba(59,130,246,0.9)]',
-    border: 'border-sky-200/80',
-    colorHex: '#3b82f6'
+    shadow: 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.7),0_4px_12px_rgba(87,155,255,0.5)]',
+    glow: 'drop-shadow-[0_0_8px_rgba(87,155,255,0.85)]',
+    border: 'border-[#BFDBFE]/80',
+    colorHex: '#579BFF'
   },
   emerald: {
-    bg: 'from-emerald-300 via-emerald-500 to-teal-700',
+    bg: 'from-[#6EE7B7] via-[#10B981] to-[#047857]',
     icon: '🟢',
     text: 'text-white',
-    shadow: 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.7),0_4px_12px_rgba(16,185,129,0.6)]',
-    glow: 'drop-shadow-[0_0_8px_rgba(16,185,129,0.9)]',
-    border: 'border-emerald-200/80',
-    colorHex: '#10b981'
+    shadow: 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.7),0_4px_12px_rgba(16,185,129,0.5)]',
+    glow: 'drop-shadow-[0_0_8px_rgba(16,185,129,0.85)]',
+    border: 'border-[#A7F3D0]/80',
+    colorHex: '#10B981'
   },
   topaz: {
-    bg: 'from-amber-300 via-yellow-400 to-amber-600',
+    bg: 'from-[#FDE68A] via-[#F5C76B] to-[#D97706]',
     icon: '⭐',
     text: 'text-white',
-    shadow: 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),0_4px_12px_rgba(245,158,11,0.6)]',
-    glow: 'drop-shadow-[0_0_8px_rgba(245,158,11,0.9)]',
-    border: 'border-yellow-100/90',
-    colorHex: '#f59e0b'
+    shadow: 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),0_4px_12px_rgba(245,199,107,0.5)]',
+    glow: 'drop-shadow-[0_0_8px_rgba(245,199,107,0.9)]',
+    border: 'border-[#FEF3C7]/90',
+    colorHex: '#F5C76B'
   },
   amethyst: {
-    bg: 'from-purple-400 via-violet-600 to-indigo-800',
+    bg: 'from-[#C4A7FF] via-[#A855F7] to-[#7138C8]',
     icon: '🔺',
     text: 'text-white',
-    shadow: 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.7),0_4px_12px_rgba(168,85,247,0.6)]',
-    glow: 'drop-shadow-[0_0_8px_rgba(168,85,247,0.9)]',
-    border: 'border-purple-200/80',
-    colorHex: '#a855f7'
+    shadow: 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.7),0_4px_12px_rgba(168,85,247,0.5)]',
+    glow: 'drop-shadow-[0_0_8px_rgba(168,85,247,0.85)]',
+    border: 'border-[#E9D5FF]/80',
+    colorHex: '#A855F7'
   },
   prism: {
-    bg: 'from-pink-400 via-cyan-400 to-amber-300',
+    bg: 'from-[#F18BCB] via-[#39D5E8] to-[#579BFF]',
     icon: '✨',
     text: 'text-white',
-    shadow: 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),0_4px_16px_rgba(236,72,153,0.7)]',
-    glow: 'drop-shadow-[0_0_12px_rgba(236,72,153,1)]',
-    border: 'border-pink-100/90',
-    colorHex: '#ec4899'
+    shadow: 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.85),0_4px_14px_rgba(57,213,232,0.55)]',
+    glow: 'drop-shadow-[0_0_10px_rgba(57,213,232,0.9)]',
+    border: 'border-[#CFFAFE]/90',
+    colorHex: '#39D5E8'
   },
 };
 
@@ -171,6 +173,7 @@ interface GameBoardGridProps {
   hintPair: { g1: BoardGem; g2: BoardGem } | null;
   particleBursts: Array<{ id: string; x: number; y: number; color: string }>;
   comboText: string | null;
+  comboMultiplier: number;
   onGemClick: (gem: BoardGem) => void;
   onTouchStart: (e: React.TouchEvent, gem: BoardGem) => void;
   onTouchMove: (e: React.TouchEvent) => void;
@@ -183,6 +186,7 @@ const GameBoardGrid: React.FC<GameBoardGridProps> = React.memo(({
   hintPair,
   particleBursts,
   comboText,
+  comboMultiplier,
   onGemClick,
   onTouchStart,
   onTouchMove,
@@ -191,14 +195,14 @@ const GameBoardGrid: React.FC<GameBoardGridProps> = React.memo(({
   return (
     <div
       id="game-board-container"
-      className="game-board-container relative aspect-square mx-auto bg-gradient-to-b from-[#141f4d] via-[#111942] to-[#0c1333] border-2 border-indigo-400/60 rounded-2xl shadow-[0_8px_30px_rgba(59,130,246,0.3)] p-1 sm:p-1.5 flex items-center justify-center overflow-hidden touch-none select-none overscroll-none shrink-0"
+      className="game-board-container relative aspect-square mx-auto bg-gradient-to-b from-[#211238] via-[#18102E] to-[#10152D] border-2 border-[rgba(196,167,255,0.25)] rounded-2xl shadow-[0_8px_32px_rgba(33,18,56,0.6),0_0_20px_rgba(113,56,200,0.15)] p-1 sm:p-1.5 flex items-center justify-center overflow-hidden touch-none select-none overscroll-none shrink-0"
       style={{
         touchAction: 'none',
         aspectRatio: '1 / 1',
-        width: 'min(98cqmin, 94vw, 390px)',
-        height: 'min(98cqmin, 94vw, 390px)',
-        maxWidth: 'min(98cqmin, 94vw, 390px)',
-        maxHeight: 'min(98cqmin, 94vw, 390px)',
+        width: 'min(98cqmin, 94vw, 440px)',
+        height: 'min(98cqmin, 94vw, 440px)',
+        maxWidth: 'min(98cqmin, 94vw, 440px)',
+        maxHeight: 'min(98cqmin, 94vw, 440px)',
       }}
     >
       <div
@@ -249,8 +253,8 @@ const GameBoardGrid: React.FC<GameBoardGridProps> = React.memo(({
                     exit={{ scale: 0, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 25, mass: 0.8 }}
                     className={`rounded-md sm:rounded-lg bg-gradient-to-b ${style.bg} ${style.shadow} cursor-pointer relative flex items-center justify-center border ${style.border} overflow-hidden aspect-square ${
-                      isSelected ? 'ring-2 ring-white z-10' : ''
-                    } ${isHinted ? 'ring-2 ring-amber-400 scale-105 z-10' : ''}`}
+                      isSelected ? 'ring-2 ring-[#39D5E8] shadow-[0_0_12px_rgba(57,213,232,0.8)] z-10' : ''
+                    } ${isHinted ? 'ring-2 ring-[#F5C76B] shadow-[0_0_12px_rgba(245,199,107,0.8)] scale-105 z-10' : ''}`}
                     style={{
                       width: '100%',
                       height: '100%',
@@ -291,13 +295,29 @@ const GameBoardGrid: React.FC<GameBoardGridProps> = React.memo(({
       ))}
 
       <AnimatePresence>
+        {comboMultiplier > 1 && (
+          <motion.div
+            key={`combo-badge-x${comboMultiplier}`}
+            initial={{ scale: 0.5, opacity: 0, y: -10 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.6, opacity: 0, y: -10 }}
+            transition={{ type: 'spring', stiffness: 450, damping: 20 }}
+            className="absolute top-2 right-2 pointer-events-none z-30 flex items-center gap-1 font-headline font-black text-xs sm:text-sm text-amber-300 bg-gradient-to-r from-[#1e1042]/95 via-[#2e145c]/95 to-[#1e1042]/95 px-2.5 py-1 rounded-xl border-2 border-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.75)] uppercase tracking-wider"
+          >
+            <Zap size={12} className="text-amber-400 fill-amber-400 animate-pulse" />
+            <span>COMBO x{comboMultiplier}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
         {comboText && (
           <motion.div
             initial={{ scale: 0.5, opacity: 0, y: 15 }}
             animate={{ scale: 1.1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: -15 }}
             transition={{ type: 'spring' }}
-            className="absolute pointer-events-none z-30 font-headline font-black text-sm sm:text-base text-amber-300 bg-[#0e163b]/95 px-3.5 py-1.5 rounded-xl border-2 border-amber-400 shadow-[0_0_25px_rgba(251,191,36,0.7)] uppercase tracking-wider max-w-[90%]"
+            className="absolute pointer-events-none z-30 font-headline font-black text-sm sm:text-base text-amber-300 bg-[#0e163b]/95 px-3.5 py-1.5 rounded-xl border-2 border-amber-400 shadow-[0_0_25px_rgba(251,191,36,0.7)] uppercase tracking-wider max-w-[90%] text-center"
           >
             {comboText}
           </motion.div>
@@ -319,6 +339,7 @@ export const GameView: React.FC<GameViewProps> = ({
   onSetLevelInProgress,
   onOpenShop,
   onMatchMade,
+  onComboChange,
 }) => {
   const currentLevelId = gameState.currentPlayingLevelId || 1;
   const levelData = useMemo(() => gameState.levels.find(l => l.id === currentLevelId), [gameState.levels, currentLevelId]);
@@ -381,6 +402,11 @@ export const GameView: React.FC<GameViewProps> = ({
 
   const [gameResult, setGameResult] = useState<'won' | 'lost' | null>(null);
   const [comboText, setComboText] = useState<string | null>(null);
+  const [comboMultiplier, setComboMultiplier] = useState<number>(1);
+  const [lastComboBonus, setLastComboBonus] = useState<number>(0);
+  const comboMultiplierRef = useRef<number>(1);
+  const lastMatchTimeRef = useRef<number>(0);
+  const comboResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [particleBursts, setParticleBursts] = useState<{ id: string, x: number, y: number, color: string }[]>([]);
 
@@ -598,6 +624,15 @@ export const GameView: React.FC<GameViewProps> = ({
     elapsedSecondsRef.current = 0;
     setGameResult(null);
     setComboText(null);
+    setComboMultiplier(1);
+    setLastComboBonus(0);
+    comboMultiplierRef.current = 1;
+    lastMatchTimeRef.current = 0;
+    if (comboResetTimerRef.current) {
+      clearTimeout(comboResetTimerRef.current);
+      comboResetTimerRef.current = null;
+    }
+    onComboChange?.(1);
     setIsPaused(false);
     setHintPair(null);
     setLastMoveSnapshot(null);
@@ -659,6 +694,11 @@ export const GameView: React.FC<GameViewProps> = ({
 
           setGameResult(null);
           setComboText(null);
+          setComboMultiplier(1);
+          setLastComboBonus(0);
+          comboMultiplierRef.current = 1;
+          lastMatchTimeRef.current = 0;
+          onComboChange?.(1);
           setIsPaused(false);
           onSetLevelInProgress?.(true);
           restored = true;
@@ -692,6 +732,15 @@ export const GameView: React.FC<GameViewProps> = ({
 
     return () => clearInterval(intervalId);
   }, [isPaused, gameResult, isLeaveConfirmOpen, isRestartConfirmOpen]);
+
+  // Cleanup combo reset timer on unmount
+  useEffect(() => {
+    return () => {
+      if (comboResetTimerRef.current) {
+        clearTimeout(comboResetTimerRef.current);
+      }
+    };
+  }, []);
 
   // Touch Swipe Gesture State (Supports natural swipe gestures in all 4 directions without page scroll)
   const touchStartRef = useRef<{ x: number; y: number; gem: BoardGem } | null>(null);
@@ -870,19 +919,60 @@ export const GameView: React.FC<GameViewProps> = ({
     });
 
     triggerHaptic('match');
-    playComboChime(matched.length, gameState.soundEnabled);
-    onMatchMade?.(1);
 
-    const matchScore = matched.length * 50;
-    scoreRef.current += matchScore;
+    // 3-second consecutive match window for Combo Multiplier
+    const now = Date.now();
+    const COMBO_WINDOW_MS = 3000;
+    const isWithinComboWindow = lastMatchTimeRef.current > 0 && now - lastMatchTimeRef.current <= COMBO_WINDOW_MS;
+    const nextCombo = isWithinComboWindow ? comboMultiplierRef.current + 1 : 1;
+
+    lastMatchTimeRef.current = now;
+    comboMultiplierRef.current = nextCombo;
+    setComboMultiplier(nextCombo);
+    onComboChange?.(nextCombo);
+
+    if (comboResetTimerRef.current) {
+      clearTimeout(comboResetTimerRef.current);
+    }
+    comboResetTimerRef.current = setTimeout(() => {
+      const endedMultiplier = comboMultiplierRef.current;
+      if (endedMultiplier > 1) {
+        playComboFinishSound(endedMultiplier, gameState.soundEnabled);
+        setComboText(`COMBO x${endedMultiplier} FINISHED!`);
+        setTimeout(() => {
+          setComboText((prev) => (prev?.includes('FINISHED') ? null : prev));
+        }, 1200);
+      }
+      comboMultiplierRef.current = 1;
+      lastMatchTimeRef.current = 0;
+      setComboMultiplier(1);
+      setLastComboBonus(0);
+      onComboChange?.(1);
+    }, COMBO_WINDOW_MS);
+
+    playComboChime(matched.length, nextCombo, gameState.soundEnabled);
+    onMatchMade?.(1, nextCombo);
+
+    const baseMatchScore = matched.length * 50;
+    const bonusPoints = nextCombo > 1 ? baseMatchScore * (nextCombo - 1) : 0;
+    const totalMatchScore = baseMatchScore + bonusPoints;
+
+    setLastComboBonus(bonusPoints);
+    scoreRef.current += totalMatchScore;
     gemsCollectedRef.current += targetGemsFound;
 
     setScore(scoreRef.current);
     setGemsCollected(gemsCollectedRef.current);
 
-    if (matched.length >= 5) setComboText('FANTASY BURST!');
-    else if (matched.length === 4) setComboText('SUPER COMBO!');
-    else setComboText('MATCH!');
+    if (nextCombo >= 2) {
+      if (matched.length >= 5) setComboText(`FANTASY BURST! x${nextCombo} (+${bonusPoints})`);
+      else if (matched.length === 4) setComboText(`SUPER COMBO! x${nextCombo} (+${bonusPoints})`);
+      else setComboText(`COMBO x${nextCombo}! (+${bonusPoints} BONUS)`);
+    } else {
+      if (matched.length >= 5) setComboText('FANTASY BURST!');
+      else if (matched.length === 4) setComboText('SUPER COMBO!');
+      else setComboText('MATCH!');
+    }
 
     setBoard(nextBoard);
 
@@ -1166,25 +1256,25 @@ export const GameView: React.FC<GameViewProps> = ({
   return (
     <div
       id="game-view"
-      className="game-view-container flex flex-col w-full h-full justify-between select-none relative z-10 text-white max-w-full min-w-0 overscroll-none touch-none p-safe px-2 sm:px-2.5"
+      className="game-view-container game-view-adaptive select-none relative z-10 text-white max-w-full min-w-0 overscroll-none touch-none p-safe px-1.5 sm:px-2.5"
       style={{ width: '100%', maxWidth: '100%', height: '100%' }}
     >
       {/* Unified In-Game Header: Back to Map, Stage Title, Currency, and Pause */}
       <div
-        className="flex items-center justify-between mb-1 sm:mb-1.5 shrink-0 gap-1 w-full max-w-full"
+        className="flex items-center justify-between mb-1 shrink-0 gap-1 w-full max-w-full"
         style={{ width: '100%', maxWidth: '100%' }}
       >
         <button
           type="button"
           onClick={() => handleRequestLeave('map')}
-          className="flex items-center gap-1 font-headline font-bold text-[11px] sm:text-xs uppercase text-cyan-300 hover:text-white transition-colors cursor-pointer bg-[#121d4a] px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-indigo-400/40 shadow-[0_2px_10px_rgba(34,211,238,0.2)] min-h-[36px] shrink-0"
+          className="flex items-center gap-1 font-headline font-bold text-[10px] sm:text-xs uppercase text-cyan-300 hover:text-white transition-colors cursor-pointer bg-[#121d4a] px-2 sm:px-3 py-1 rounded-lg border border-indigo-400/40 shadow-[0_2px_10px_rgba(34,211,238,0.2)] min-h-[32px] sm:min-h-[36px] shrink-0"
           title="Return to Realm Map"
         >
-          <ArrowLeft size={14} /> Map
+          <ArrowLeft size={13} /> Map
         </button>
 
         <div className="flex items-center gap-1 min-w-0 px-1 truncate flex-1 justify-center">
-          <h2 className="font-headline font-black text-xs sm:text-sm uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-white to-cyan-300 shadow-sm truncate">
+          <h2 className="font-headline font-black text-[11px] sm:text-sm uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-white to-cyan-300 shadow-sm truncate">
             Stage {currentLevelId}: {levelData?.name || 'Arena'}
           </h2>
           {currentDifficulty !== 'medium' && (
@@ -1198,216 +1288,238 @@ export const GameView: React.FC<GameViewProps> = ({
           )}
         </div>
 
-        <div className="flex items-center gap-1.5 shrink-0">
-          <div className="hidden xs:flex items-center gap-1 bg-[#121d4a] px-2 py-1 rounded-lg border border-amber-400/40 text-amber-300 font-headline font-black text-[10px]">
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              triggerHaptic('click');
+              setIsPaused(true);
+              saveCurrentSession();
+              onOpenShop?.();
+            }}
+            className="flex items-center gap-1 bg-[#29203D] px-1.5 sm:px-2 py-1 rounded-lg border border-[rgba(245,199,107,0.40)] text-[#F5C76B] font-headline font-black text-[9.5px] sm:text-[10px] cursor-pointer hover:border-[#F5C76B] transition-colors"
+            title="Open Booster Emporium"
+          >
             <span>🪙</span>
             <span>{gameState.coins.toLocaleString()}</span>
-          </div>
+          </button>
           <button
             type="button"
             onClick={() => { triggerHaptic('click'); setIsPaused(true); }}
-            className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 border border-cyan-300 flex items-center justify-center text-white cursor-pointer shadow-[0_2px_10px_rgba(34,211,238,0.3)] hover:scale-105 active:scale-95 transition-all shrink-0 min-h-[32px] min-w-[32px]"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-[#7138C8] to-[#A855F7] border border-[rgba(196,167,255,0.40)] flex items-center justify-center text-white cursor-pointer shadow-[0_2px_10px_rgba(113,56,200,0.35)] hover:scale-105 active:scale-95 transition-all shrink-0 min-h-[28px] min-w-[28px]"
             title="Pause Game"
             aria-label="Pause Game"
           >
-            <Pause size={13} className="fill-current" />
+            <Pause size={12} className="fill-current" />
           </button>
         </div>
       </div>
 
-      {/* High-Efficiency Unified In-Game HUD: Target Objective + Moves Left + Score + Time */}
-      <div
-        className="grid w-full max-w-full gap-1 sm:gap-1.5 mb-1 shrink-0 min-w-0"
-        style={{
-          width: '100%',
-          maxWidth: '100%',
-          gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
-        }}
-      >
-        {/* 1. Target Objective */}
-        <div
-          className={`p-1 sm:p-1.5 rounded-xl flex items-center gap-1 sm:gap-1.5 border ${objectiveType === 'ruby' ? 'border-rose-400/60 bg-rose-950/30' : 'border-cyan-400/60 bg-cyan-950/30'} min-w-0 w-full max-w-full shadow-sm`}
-          style={{ width: '100%', maxWidth: '100%' }}
-        >
-          <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-md flex items-center justify-center text-xs border ${objectiveStyle.border} bg-gradient-to-b ${objectiveStyle.bg} shrink-0`}>
-            {objectiveStyle.icon}
-          </div>
-          <div className="min-w-0">
-            <p className="text-[6.5px] uppercase font-headline font-bold text-indigo-300 leading-none truncate">Target</p>
-            <p className="text-[11px] sm:text-xs font-headline font-black text-white leading-none mt-0.5 truncate">
-              <span className="text-cyan-300">{gemsCollected}</span><span className="text-indigo-400/60">/{objectiveTarget}</span>
-            </p>
-          </div>
+      {/* Adaptive Split Area: Vertical on Portrait, Side-by-Side (Board Left, HUD & Boosters Right) on Landscape / Flip Flex */}
+      <div className="game-main-split">
+        {/* Board Scaling Wrapper: Uses flex-1 and min-h-0 to precisely occupy remaining space without overflow */}
+        <div className="board-scaling-wrapper flex-1 min-h-0 min-w-0 w-full flex items-center justify-center my-0.5 sm:my-1 overflow-hidden">
+          <GameBoardGrid
+            board={board}
+            selectedGem={selectedGem}
+            hintPair={hintPair}
+            particleBursts={particleBursts}
+            comboText={comboText}
+            comboMultiplier={comboMultiplier}
+            onGemClick={handleGemClick}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          />
         </div>
 
-        {/* 2. Moves Left */}
-        <div
-          className="bg-gradient-to-b from-[#0c244c] to-[#081733] p-1 sm:p-1.5 border border-cyan-400/60 rounded-xl flex flex-col justify-center min-w-0 w-full max-w-full shadow-sm"
-          style={{ width: '100%', maxWidth: '100%' }}
-        >
-          <div className="flex items-center justify-between gap-0.5">
-            <p className="text-[6.5px] uppercase font-headline font-bold text-cyan-300/80 leading-none truncate">Moves</p>
-            <Zap size={9} className="text-cyan-400 shrink-0" />
-          </div>
-          <h3 className={`text-xs sm:text-sm font-headline font-black leading-none mt-0.5 truncate ${movesLeft <= 5 ? 'text-rose-400 animate-pulse' : 'text-cyan-300'}`}>
-            {movesLeft}
-          </h3>
-        </div>
-
-        {/* 3. Score */}
-        <div
-          className="bg-gradient-to-b from-[#2a1e0b] to-[#1a1306] p-1 sm:p-1.5 border border-amber-400/60 rounded-xl flex flex-col justify-center min-w-0 w-full max-w-full shadow-sm"
-          style={{ width: '100%', maxWidth: '100%' }}
-        >
-          <div className="flex items-center justify-between gap-0.5">
-            <p className="text-[6.5px] uppercase font-headline font-bold text-amber-300/80 leading-none truncate">Score</p>
-            <Trophy size={9} className="text-amber-400 shrink-0" />
-          </div>
-          <h3 className="text-xs sm:text-sm font-headline font-black text-amber-300 leading-none mt-0.5 truncate">
-            {score.toLocaleString()}
-          </h3>
-        </div>
-
-        {/* 4. Time */}
-        <div
-          className="bg-gradient-to-b from-[#211145] to-[#130b2c] p-1 sm:p-1.5 border border-purple-400/60 rounded-xl flex flex-col justify-center min-w-0 w-full max-w-full shadow-sm"
-          style={{ width: '100%', maxWidth: '100%' }}
-        >
-          <div className="flex items-center justify-between gap-0.5">
-            <p className="text-[6.5px] uppercase font-headline font-bold text-purple-300/80 leading-none truncate">Time</p>
-            <Clock size={9} className="text-purple-400 shrink-0" />
-          </div>
-          <h3 className="text-xs sm:text-sm font-headline font-black text-purple-300 leading-none mt-0.5 truncate font-mono">
-            {formatTime(elapsedSeconds)}
-          </h3>
-        </div>
-      </div>
-
-      {/* Board Scaling Wrapper: Uses flex-1 and min-h-0 to precisely occupy remaining vertical space between HUD and Boosters without overflow */}
-      <div className="board-scaling-wrapper flex-1 min-h-0 min-w-0 w-full flex items-center justify-center my-0.5 sm:my-1 overflow-hidden">
-        <GameBoardGrid
-          board={board}
-          selectedGem={selectedGem}
-          hintPair={hintPair}
-          particleBursts={particleBursts}
-          comboText={comboText}
-          onGemClick={handleGemClick}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        />
-      </div>
-
-      {/* Dynamic hint banner */}
-      <div className="text-center my-1 shrink-0 px-1 w-full max-w-full" style={{ width: '100%', maxWidth: '100%' }}>
-        <p className="text-[8px] sm:text-[9px] font-headline uppercase tracking-widest text-cyan-300 font-bold leading-none animate-pulse truncate w-full max-w-full">
-          {boosterActive === 'hammer'
-            ? '⚡ HAMMER ACTIVE — Tap any crystal to smash it!'
-            : hintPair
-            ? '💡 HINT ACTIVE — Swap the highlighted crystals!'
-            : 'Tap adjacent crystals to form combos!'}
-        </p>
-      </div>
-
-      {/* Complete Power Boosters Suite: Hint, Shuffle, Undo, Hammer, Rainbow & Shop link */}
-      <div className="shrink-0 mt-auto pt-0.5 pb-1 w-full max-w-full" style={{ width: '100%', maxWidth: '100%' }}>
-        <div className="flex items-center justify-between mb-1 px-1 w-full max-w-full" style={{ width: '100%', maxWidth: '100%' }}>
-          <p className="text-[8px] sm:text-[9px] font-headline font-bold uppercase tracking-wider text-violet-300">Power Boosters</p>
-          {onOpenShop && (
-            <button
-              type="button"
-              onClick={() => {
-                triggerHaptic('click');
-                setIsPaused(true);
-                onOpenShop();
-              }}
-              className="text-[8px] sm:text-[9px] text-amber-300 hover:text-amber-200 font-bold flex items-center gap-1 cursor-pointer shrink-0"
+        {/* Adaptive Controls Wrapper: display:contents in Portrait (preserving HUD top, Boosters bottom), Side Column in Landscape */}
+        <div className="game-side-controls">
+          {/* High-Efficiency Unified In-Game HUD: Target Objective + Moves Left + Score + Time */}
+          <div
+            className="game-hud-adaptive max-w-full mb-1 shrink-0 min-w-0"
+            style={{ width: '100%', maxWidth: '100%' }}
+          >
+            {/* 1. Target Objective */}
+            <div
+              className={`p-1 sm:p-1.5 rounded-xl flex items-center gap-1 sm:gap-1.5 border ${objectiveType === 'ruby' ? 'border-[rgba(244,63,94,0.55)] bg-[#29203D]' : 'border-[rgba(57,213,232,0.5)] bg-[#29203D]'} min-w-0 w-full max-w-full shadow-sm`}
+              style={{ width: '100%', maxWidth: '100%' }}
             >
-              <ShoppingBag size={11} /> + Emporium
-            </button>
-          )}
-        </div>
-        <div
-          className="grid gap-1 w-full max-w-full"
-          style={{
-            width: '100%',
-            maxWidth: '100%',
-            gridTemplateColumns: 'repeat(5, minmax(0, 1fr))',
-          }}
-        >
-          {/* 1. Hint */}
-          <button
-            type="button"
-            onClick={() => activateBooster('hint')}
-            disabled={isProcessing || isPaused}
-            className="flex flex-col items-center justify-center p-1 rounded-xl bg-[#121c47] border border-indigo-400/40 hover:border-amber-400 transition-all cursor-pointer disabled:opacity-50 active:scale-95 min-h-[46px] min-w-0"
-            style={{ width: '100%', maxWidth: '100%' }}
-            title="Hint: Highlights a guaranteed match"
-          >
-            <div className="w-5 h-5 rounded-lg bg-yellow-500/20 border border-yellow-400/50 flex items-center justify-center mb-0.5 text-xs">💡</div>
-            <span className="font-headline font-bold text-[7px] sm:text-[8px] uppercase text-white leading-none">Hint</span>
-            <span className="text-[6.5px] sm:text-[7.5px] text-amber-300 font-bold mt-0.5">{boostersCount.hint}</span>
-          </button>
+              <div className={`w-4 h-4 sm:w-6 sm:h-6 rounded-md flex items-center justify-center text-[10px] sm:text-xs border ${objectiveStyle.border} bg-gradient-to-b ${objectiveStyle.bg} shrink-0`}>
+                {objectiveStyle.icon}
+              </div>
+              <div className="min-w-0">
+                <p className="text-[6px] sm:text-[6.5px] uppercase font-headline font-bold text-[#C6BDD9] leading-none truncate">Target</p>
+                <p className="text-[10px] sm:text-xs font-headline font-black text-[#F8F5FF] leading-none mt-0.5 truncate">
+                  <span className="text-[#39D5E8]">{gemsCollected}</span><span className="text-[#C6BDD9]/60">/{objectiveTarget}</span>
+                </p>
+              </div>
+            </div>
 
-          {/* 2. Shuffle */}
-          <button
-            type="button"
-            onClick={() => activateBooster('shuffle')}
-            disabled={isProcessing || isPaused}
-            className="flex flex-col items-center justify-center p-1 rounded-xl bg-[#121c47] border border-indigo-400/40 hover:border-purple-400 transition-all cursor-pointer disabled:opacity-50 active:scale-95 min-h-[46px] min-w-0"
-            style={{ width: '100%', maxWidth: '100%' }}
-            title="Shuffle: Rearranges all board tiles"
-          >
-            <div className="w-5 h-5 rounded-lg bg-purple-500/20 border border-purple-400/50 flex items-center justify-center mb-0.5 text-xs">🔄</div>
-            <span className="font-headline font-bold text-[7px] sm:text-[8px] uppercase text-white leading-none">Shuffle</span>
-            <span className="text-[6.5px] sm:text-[7.5px] text-purple-300 font-bold mt-0.5">{boostersCount.shuffle}</span>
-          </button>
+            {/* 2. Moves Left */}
+            <div
+              className="bg-[#29203D] p-1 sm:p-1.5 border border-[rgba(87,155,255,0.5)] rounded-xl flex flex-col justify-center min-w-0 w-full max-w-full shadow-sm"
+              style={{ width: '100%', maxWidth: '100%' }}
+            >
+              <div className="flex items-center justify-between gap-0.5">
+                <p className="text-[6px] sm:text-[6.5px] uppercase font-headline font-bold text-[#579BFF]/90 leading-none truncate">Moves</p>
+                <Zap size={9} className="text-[#579BFF] shrink-0" />
+              </div>
+              <h3 className={`text-[11px] sm:text-sm font-headline font-black leading-none mt-0.5 truncate ${movesLeft <= 5 ? 'text-[#F43F5E] animate-pulse' : 'text-[#579BFF]'}`}>
+                {movesLeft}
+              </h3>
+            </div>
 
-          {/* 3. Undo */}
-          <button
-            type="button"
-            onClick={() => activateBooster('undo')}
-            disabled={isProcessing || isPaused || !lastMoveSnapshot}
-            className={`flex flex-col items-center justify-center p-1 rounded-xl bg-[#121c47] border transition-all cursor-pointer active:scale-95 min-h-[46px] min-w-0 ${
-              lastMoveSnapshot ? 'border-cyan-400/60 hover:border-cyan-300' : 'border-indigo-400/20 opacity-40'
-            }`}
-            style={{ width: '100%', maxWidth: '100%' }}
-            title="Undo: Reverses your most recent move"
-          >
-            <div className="w-5 h-5 rounded-lg bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center mb-0.5 text-xs">⏪</div>
-            <span className="font-headline font-bold text-[7px] sm:text-[8px] uppercase text-white leading-none">Undo</span>
-            <span className="text-[6.5px] sm:text-[7.5px] text-cyan-300 font-bold mt-0.5">{boostersCount.undo}</span>
-          </button>
+            {/* 3. Score & Combo Multiplier */}
+            <div
+              className="bg-[#29203D] p-1 sm:p-1.5 border border-[rgba(245,199,107,0.5)] rounded-xl flex flex-col justify-center min-w-0 w-full max-w-full shadow-sm relative overflow-hidden"
+              style={{ width: '100%', maxWidth: '100%' }}
+            >
+              <div className="flex items-center justify-between gap-0.5">
+                <p className="text-[6px] sm:text-[6.5px] uppercase font-headline font-bold text-[#F5C76B]/90 leading-none truncate">Score</p>
+                {comboMultiplier > 1 ? (
+                  <span className="px-1 py-0.2 rounded bg-[#F5C76B] text-[#211238] font-headline font-black text-[7px] leading-none animate-bounce shrink-0">
+                    x{comboMultiplier}
+                  </span>
+                ) : (
+                  <Trophy size={9} className="text-[#F5C76B] shrink-0" />
+                )}
+              </div>
+              <h3 className="text-[11px] sm:text-sm font-headline font-black text-[#F5C76B] leading-none mt-0.5 truncate">
+                {score.toLocaleString()}
+              </h3>
+            </div>
 
-          {/* 4. Hammer */}
-          <button
-            type="button"
-            onClick={() => activateBooster('hammer')}
-            disabled={isProcessing || isPaused}
-            className={`flex flex-col items-center justify-center p-1 rounded-xl bg-[#121c47] border transition-all cursor-pointer min-h-[46px] min-w-0 ${
-              boosterActive === 'hammer' ? 'border-cyan-400 bg-cyan-950/50 shadow-[0_0_12px_rgba(34,211,238,0.4)] scale-105' : 'border-indigo-400/40 hover:border-amber-400'
-            } disabled:opacity-50`}
-            style={{ width: '100%', maxWidth: '100%' }}
-            title="Hammer: Smashes one selected tile"
-          >
-            <div className="w-5 h-5 rounded-lg bg-amber-500/20 border border-amber-400/50 flex items-center justify-center mb-0.5 text-xs">🔨</div>
-            <span className="font-headline font-bold text-[7px] sm:text-[8px] uppercase text-white leading-none">Hammer</span>
-            <span className="text-[6.5px] sm:text-[7.5px] text-amber-300 font-bold mt-0.5">{boostersCount.hammer}</span>
-          </button>
+            {/* 4. Time */}
+            <div
+              className="bg-[#29203D] p-1 sm:p-1.5 border border-[rgba(168,85,247,0.5)] rounded-xl flex flex-col justify-center min-w-0 w-full max-w-full shadow-sm"
+              style={{ width: '100%', maxWidth: '100%' }}
+            >
+              <div className="flex items-center justify-between gap-0.5">
+                <p className="text-[6px] sm:text-[6.5px] uppercase font-headline font-bold text-[#C4A7FF]/90 leading-none truncate">Time</p>
+                <Clock size={9} className="text-[#C4A7FF] shrink-0" />
+              </div>
+              <h3 className="text-[11px] sm:text-sm font-headline font-black text-[#C4A7FF] leading-none mt-0.5 truncate font-mono">
+                {formatTime(elapsedSeconds)}
+              </h3>
+            </div>
+          </div>
 
-          {/* 5. Rainbow / Magic Match */}
-          <button
-            type="button"
-            onClick={() => activateBooster('rainbow')}
-            disabled={isProcessing || isPaused}
-            className="flex flex-col items-center justify-center p-1 rounded-xl bg-[#121c47] border border-indigo-400/40 hover:border-pink-400 transition-all cursor-pointer disabled:opacity-50 active:scale-95 min-h-[46px] min-w-0"
-            style={{ width: '100%', maxWidth: '100%' }}
-            title="Magic Match: Transforms 4 tiles to the objective gem"
-          >
-            <div className="w-5 h-5 rounded-lg bg-pink-500/20 border border-pink-400/50 flex items-center justify-center mb-0.5 text-xs">🌈</div>
-            <span className="font-headline font-bold text-[7px] sm:text-[8px] uppercase text-white leading-none">Magic</span>
-            <span className="text-[6.5px] sm:text-[7.5px] text-pink-300 font-bold mt-0.5">{boostersCount.rainbow}</span>
-          </button>
+          {/* Bottom / Side Controls: Dynamic Hint Banner + Power Boosters Suite */}
+          <div className="game-bottom-controls shrink-0 mt-auto pt-0.5 pb-0.5 w-full max-w-full" style={{ width: '100%', maxWidth: '100%' }}>
+            {/* Dynamic hint & active combo multiplier banner */}
+            <div className="text-center mb-1 shrink-0 px-1 w-full max-w-full" style={{ width: '100%', maxWidth: '100%' }}>
+              <p className="text-[7.5px] sm:text-[9px] font-headline uppercase tracking-widest text-[#39D5E8] font-bold leading-none animate-pulse truncate w-full max-w-full">
+                {boosterActive === 'hammer'
+                  ? '⚡ HAMMER ACTIVE — Tap any crystal to smash it!'
+                  : hintPair
+                  ? '💡 HINT ACTIVE — Swap the highlighted crystals!'
+                  : comboMultiplier > 1
+                  ? `🔥 COMBO x${comboMultiplier} (3s) — +${lastComboBonus} BONUS PTS!`
+                  : 'Tap adjacent crystals to form combos!'}
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between mb-1 px-1 w-full max-w-full" style={{ width: '100%', maxWidth: '100%' }}>
+              <p className="text-[7.5px] sm:text-[9px] font-headline font-bold uppercase tracking-wider text-[#C6BDD9]">Power Boosters</p>
+              {onOpenShop && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('click');
+                    setIsPaused(true);
+                    saveCurrentSession();
+                    onOpenShop();
+                  }}
+                  className="text-[7.5px] sm:text-[9px] text-[#F5C76B] hover:text-[#FDE68A] font-bold flex items-center gap-1 cursor-pointer shrink-0 transition-colors"
+                >
+                  <ShoppingBag size={10} /> + Emporium
+                </button>
+              )}
+            </div>
+            <div
+              className="grid gap-1 w-full max-w-full"
+              style={{
+                width: '100%',
+                maxWidth: '100%',
+                gridTemplateColumns: 'repeat(5, minmax(0, 1fr))',
+              }}
+            >
+              {/* 1. Hint */}
+              <button
+                type="button"
+                onClick={() => activateBooster('hint')}
+                disabled={isProcessing || isPaused}
+                className="flex flex-col items-center justify-center p-1 rounded-xl bg-[#29203D] border border-[rgba(196,167,255,0.20)] hover:border-[#F5C76B] transition-all cursor-pointer disabled:opacity-40 active:scale-95 min-h-[42px] sm:min-h-[46px] min-w-0"
+                style={{ width: '100%', maxWidth: '100%' }}
+                title="Hint: Highlights a guaranteed match"
+              >
+                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-lg bg-[#F5C76B]/20 border border-[#F5C76B]/50 flex items-center justify-center mb-0.5 text-[10px] sm:text-xs">💡</div>
+                <span className="font-headline font-bold text-[6.5px] sm:text-[8px] uppercase text-[#F8F5FF] leading-none truncate">Hint</span>
+                <span className="text-[6px] sm:text-[7.5px] text-[#F5C76B] font-bold mt-0.5">{boostersCount.hint}</span>
+              </button>
+
+              {/* 2. Shuffle */}
+              <button
+                type="button"
+                onClick={() => activateBooster('shuffle')}
+                disabled={isProcessing || isPaused}
+                className="flex flex-col items-center justify-center p-1 rounded-xl bg-[#29203D] border border-[rgba(196,167,255,0.20)] hover:border-[#A855F7] transition-all cursor-pointer disabled:opacity-40 active:scale-95 min-h-[42px] sm:min-h-[46px] min-w-0"
+                style={{ width: '100%', maxWidth: '100%' }}
+                title="Shuffle: Rearranges all board tiles"
+              >
+                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-lg bg-[#A855F7]/20 border border-[#A855F7]/50 flex items-center justify-center mb-0.5 text-[10px] sm:text-xs">🔄</div>
+                <span className="font-headline font-bold text-[6.5px] sm:text-[8px] uppercase text-[#F8F5FF] leading-none truncate">Shuffle</span>
+                <span className="text-[6px] sm:text-[7.5px] text-[#C4A7FF] font-bold mt-0.5">{boostersCount.shuffle}</span>
+              </button>
+
+              {/* 3. Undo */}
+              <button
+                type="button"
+                onClick={() => activateBooster('undo')}
+                disabled={isProcessing || isPaused || !lastMoveSnapshot}
+                className={`flex flex-col items-center justify-center p-1 rounded-xl bg-[#29203D] border transition-all cursor-pointer active:scale-95 min-h-[42px] sm:min-h-[46px] min-w-0 ${
+                  lastMoveSnapshot ? 'border-[#39D5E8]/60 hover:border-[#39D5E8]' : 'border-[rgba(196,167,255,0.15)] opacity-40'
+                }`}
+                style={{ width: '100%', maxWidth: '100%' }}
+                title="Undo: Reverses your most recent move"
+              >
+                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-lg bg-[#39D5E8]/20 border border-[#39D5E8]/50 flex items-center justify-center mb-0.5 text-[10px] sm:text-xs">⏪</div>
+                <span className="font-headline font-bold text-[6.5px] sm:text-[8px] uppercase text-[#F8F5FF] leading-none truncate">Undo</span>
+                <span className="text-[6px] sm:text-[7.5px] text-[#39D5E8] font-bold mt-0.5">{boostersCount.undo}</span>
+              </button>
+
+              {/* 4. Hammer */}
+              <button
+                type="button"
+                onClick={() => activateBooster('hammer')}
+                disabled={isProcessing || isPaused}
+                className={`flex flex-col items-center justify-center p-1 rounded-xl bg-[#29203D] border transition-all cursor-pointer min-h-[42px] sm:min-h-[46px] min-w-0 ${
+                  boosterActive === 'hammer' ? 'border-[#39D5E8] bg-[#29203D] shadow-[0_0_12px_rgba(57,213,232,0.4)] scale-105' : 'border-[rgba(196,167,255,0.20)] hover:border-[#F5C76B]'
+                } disabled:opacity-40`}
+                style={{ width: '100%', maxWidth: '100%' }}
+                title="Hammer: Smashes one selected tile"
+              >
+                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-lg bg-[#F5C76B]/20 border border-[#F5C76B]/50 flex items-center justify-center mb-0.5 text-[10px] sm:text-xs">🔨</div>
+                <span className="font-headline font-bold text-[6.5px] sm:text-[8px] uppercase text-[#F8F5FF] leading-none truncate">Hammer</span>
+                <span className="text-[6px] sm:text-[7.5px] text-[#F5C76B] font-bold mt-0.5">{boostersCount.hammer}</span>
+              </button>
+
+              {/* 5. Rainbow / Magic Match */}
+              <button
+                type="button"
+                onClick={() => activateBooster('rainbow')}
+                disabled={isProcessing || isPaused}
+                className="flex flex-col items-center justify-center p-1 rounded-xl bg-[#29203D] border border-[rgba(196,167,255,0.20)] hover:border-[#F18BCB] transition-all cursor-pointer disabled:opacity-40 active:scale-95 min-h-[42px] sm:min-h-[46px] min-w-0"
+                style={{ width: '100%', maxWidth: '100%' }}
+                title="Magic Match: Transforms 4 tiles to the objective gem"
+              >
+                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-lg bg-[#F18BCB]/20 border border-[#F18BCB]/50 flex items-center justify-center mb-0.5 text-[10px] sm:text-xs">🌈</div>
+                <span className="font-headline font-bold text-[6.5px] sm:text-[8px] uppercase text-[#F8F5FF] leading-none truncate">Magic</span>
+                <span className="text-[6px] sm:text-[7.5px] text-[#F18BCB] font-bold mt-0.5">{boostersCount.rainbow}</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1433,20 +1545,20 @@ export const GameView: React.FC<GameViewProps> = ({
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-gradient-to-b from-[#18265e] via-[#141f4d] to-[#0f173b] border-2 border-indigo-400/80 p-5 sm:p-6 text-center rounded-2xl shadow-[0_12px_45px_rgba(30,58,138,0.5)] max-h-[90dvh] overflow-y-auto w-full max-w-full"
+              className="bg-gradient-to-b from-[#29203D] via-[#211238] to-[#10152D] border-2 border-[rgba(196,167,255,0.30)] p-5 sm:p-6 text-center rounded-2xl shadow-[0_12px_45px_rgba(33,18,56,0.7)] max-h-[90dvh] overflow-y-auto w-full max-w-full"
               style={{ width: '100%', maxWidth: 'min(100%, 340px)' }}
             >
-              <h3 id="pause-modal-title" className="text-xl sm:text-2xl font-headline font-black uppercase mb-1 text-white">
+              <h3 id="pause-modal-title" className="text-xl sm:text-2xl font-headline font-black uppercase mb-1 text-[#F8F5FF]">
                 Game Paused
               </h3>
-              <p className="text-xs text-indigo-300 mb-5">Take a breath, adventurer.</p>
+              <p className="text-xs text-[#C6BDD9] mb-5">Take a breath, adventurer.</p>
 
               <div className="flex flex-col gap-2.5 sm:gap-3 w-full max-w-full">
                 {/* 1. Resume */}
                 <button
                   type="button"
                   onClick={() => { triggerHaptic('click'); setIsPaused(false); }}
-                  className="w-full py-3 sm:py-3.5 px-4 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 rounded-xl font-headline text-xs sm:text-sm font-black uppercase tracking-wider shadow-[0_4px_18px_rgba(34,211,238,0.4)] hover:brightness-110 active:scale-[0.98] cursor-pointer flex justify-center items-center gap-2 min-h-[44px]"
+                  className="w-full py-3 sm:py-3.5 px-4 bg-gradient-to-r from-[#7138C8] via-[#A855F7] to-[#579BFF] text-[#F8F5FF] rounded-xl font-headline text-xs sm:text-sm font-black uppercase tracking-wider shadow-[0_4px_18px_rgba(113,56,200,0.4)] hover:brightness-110 active:scale-[0.98] cursor-pointer flex justify-center items-center gap-2 min-h-[44px]"
                 >
                   <Play size={16} className="fill-current" /> Resume
                 </button>
@@ -1458,7 +1570,7 @@ export const GameView: React.FC<GameViewProps> = ({
                     triggerHaptic('click');
                     setIsRestartConfirmOpen(true);
                   }}
-                  className="w-full py-2.5 sm:py-3 px-4 bg-[#11193b] border border-indigo-400/50 rounded-xl font-headline text-xs font-bold uppercase tracking-wider hover:bg-indigo-900 text-white cursor-pointer min-h-[44px] flex justify-center items-center gap-2 active:scale-[0.98]"
+                  className="w-full py-2.5 sm:py-3 px-4 bg-[#211238] border border-[rgba(196,167,255,0.25)] rounded-xl font-headline text-xs font-bold uppercase tracking-wider hover:bg-[#29203D] text-[#F8F5FF] cursor-pointer min-h-[44px] flex justify-center items-center gap-2 active:scale-[0.98] transition-colors"
                 >
                   <RotateCcw size={14} /> Restart Level
                 </button>
@@ -1471,7 +1583,7 @@ export const GameView: React.FC<GameViewProps> = ({
                     setLeaveTargetTab('map');
                     setIsLeaveConfirmOpen(true);
                   }}
-                  className="w-full py-2.5 sm:py-3 px-4 bg-[#11193b] border border-rose-500/50 rounded-xl font-headline text-xs font-bold uppercase tracking-wider hover:bg-rose-950/60 text-rose-300 cursor-pointer min-h-[44px] flex justify-center items-center gap-2 active:scale-[0.98]"
+                  className="w-full py-2.5 sm:py-3 px-4 bg-[#211238] border border-[#F43F5E]/40 rounded-xl font-headline text-xs font-bold uppercase tracking-wider hover:bg-[#F43F5E]/20 text-[#FB7185] cursor-pointer min-h-[44px] flex justify-center items-center gap-2 active:scale-[0.98] transition-colors"
                 >
                   <LogOut size={14} /> Quit Level
                 </button>
@@ -1491,7 +1603,7 @@ export const GameView: React.FC<GameViewProps> = ({
         onConfirm={handleConfirmLeave}
         onCancel={handleCancelLeave}
         isDestructive={true}
-        icon={<LogOut className="text-rose-400" size={24} />}
+        icon={<LogOut className="text-[#F43F5E]" size={24} />}
       />
 
       {/* Confirmation Modal: Restart Level? */}
@@ -1504,14 +1616,14 @@ export const GameView: React.FC<GameViewProps> = ({
         onConfirm={handleConfirmRestart}
         onCancel={handleCancelRestart}
         isDestructive={true}
-        icon={<AlertTriangle className="text-amber-300" size={24} />}
+        icon={<AlertTriangle className="text-[#F5C76B]" size={24} />}
       />
 
       {/* Win/Loss Modal */}
       <AnimatePresence>
         {gameResult && (
           <div
-            className="fixed inset-0 z-[100] bg-[#070c24]/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 touch-manipulation overflow-hidden"
+            className="fixed inset-0 z-[100] bg-[#10152D]/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 touch-manipulation overflow-hidden"
             style={{ width: '100%', maxWidth: '100%' }}
             role="dialog"
             aria-modal="true"
@@ -1525,7 +1637,7 @@ export const GameView: React.FC<GameViewProps> = ({
                   const delay = `${(i * 0.12) % 2.5}s`;
                   const duration = `${2 + (i % 3) * 0.8}s`;
                   const size = i % 2 === 0 ? 'w-2.5 h-2.5' : 'w-2 h-2';
-                  const shape = i % 3 === 0 ? 'bg-amber-400 rounded-full' : i % 3 === 1 ? 'bg-cyan-300 rotate-45' : 'bg-purple-400 rounded-sm';
+                  const shape = i % 3 === 0 ? 'bg-[#F5C76B] rounded-full' : i % 3 === 1 ? 'bg-[#39D5E8] rotate-45' : 'bg-[#A855F7] rounded-sm';
                   return (
                     <div
                       key={`win-particle-${i}`}
@@ -1541,23 +1653,23 @@ export const GameView: React.FC<GameViewProps> = ({
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: -20 }}
-              className={`bg-gradient-to-b from-[#18265e] to-[#0f173b] border-2 p-5 sm:p-6 text-center relative z-10 rounded-2xl max-h-[90dvh] overflow-y-auto w-full max-w-full ${gameResult === 'won' ? 'border-amber-400/80 shadow-[0_10px_40px_rgba(251,191,36,0.35)]' : 'border-rose-500/80 shadow-[0_10px_40px_rgba(244,63,94,0.35)]'}`}
+              className={`bg-gradient-to-b from-[#29203D] via-[#211238] to-[#10152D] border-2 p-5 sm:p-6 text-center relative z-10 rounded-2xl max-h-[90dvh] overflow-y-auto w-full max-w-full ${gameResult === 'won' ? 'border-[#F5C76B] shadow-[0_10px_40px_rgba(245,199,107,0.35)]' : 'border-[#F43F5E] shadow-[0_10px_40px_rgba(244,63,94,0.35)]'}`}
               style={{ width: '100%', maxWidth: 'min(100%, 380px)' }}
             >
-              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-[#0c1433] mx-auto mb-3 sm:mb-4 border-2 border-indigo-400/40 flex items-center justify-center text-3xl sm:text-4xl shadow-lg">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-[#211238] mx-auto mb-3 sm:mb-4 border-2 border-[rgba(196,167,255,0.25)] flex items-center justify-center text-3xl sm:text-4xl shadow-lg">
                 {gameResult === 'won' ? '🏆' : '💀'}
               </div>
-              <h3 id="game-result-title" className="text-xl sm:text-2xl font-headline font-black uppercase mb-1 text-white">
+              <h3 id="game-result-title" className="text-xl sm:text-2xl font-headline font-black uppercase mb-1 text-[#F8F5FF]">
                 {gameResult === 'won' ? 'Quest Complete!' : 'Out of Moves!'}
               </h3>
               {gameResult === 'won' && (
                 <div className="flex justify-center gap-2 sm:gap-3 my-3 sm:my-4">
                   {[1, 2, 3].map((starIdx) => (
-                    <Star key={`star-${starIdx}-${currentLevelId}`} size={30} className="text-amber-400 fill-amber-400 drop-shadow-[0_0_15px_rgba(251,191,36,1)] animate-bounce" style={{ animationDelay: `${starIdx * 0.15}s` }} />
+                    <Star key={`star-${starIdx}-${currentLevelId}`} size={30} className="text-[#F5C76B] fill-[#F5C76B] drop-shadow-[0_0_15px_rgba(245,199,107,1)] animate-bounce" style={{ animationDelay: `${starIdx * 0.15}s` }} />
                   ))}
                 </div>
               )}
-              <p className="text-xs font-semibold text-violet-200 mb-2 px-1 leading-relaxed">
+              <p className="text-xs font-semibold text-[#C6BDD9] mb-2 px-1 leading-relaxed">
                 {gameResult === 'won'
                   ? `Spectacular! You gathered all ${objectiveTarget} ${objectiveType}s in ${formatTime(elapsedSeconds)} with a score of ${score.toLocaleString()}!`
                   : `You gathered ${gemsCollected}/${objectiveTarget} ${objectiveType}s in ${formatTime(elapsedSeconds)}. Swap tiles carefully to clear the mission next time!`}
@@ -1565,7 +1677,7 @@ export const GameView: React.FC<GameViewProps> = ({
 
               {/* Bonus badges */}
               {gameResult === 'won' && !usedBoosterInLevelRef.current && (
-                <div className="inline-flex items-center gap-1 bg-amber-400/20 border border-amber-400/60 px-2.5 py-1 rounded-lg text-amber-300 font-headline font-bold text-[10px] mb-3">
+                <div className="inline-flex items-center gap-1 bg-[#F5C76B]/20 border border-[#F5C76B]/60 px-2.5 py-1 rounded-lg text-[#F5C76B] font-headline font-bold text-[10px] mb-3">
                   <Sparkles size={12} /> Perfect Run! (+Bonus Coins)
                 </div>
               )}
@@ -1575,7 +1687,7 @@ export const GameView: React.FC<GameViewProps> = ({
                   <button
                     type="button"
                     onClick={() => { triggerHaptic('click'); setTab('map'); }}
-                    className="w-full py-3 sm:py-3.5 bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 rounded-xl font-headline text-xs sm:text-sm font-black uppercase tracking-wider shadow-[0_4px_15px_rgba(251,191,36,0.4)] hover:brightness-110 active:scale-95 transition-all cursor-pointer min-h-[44px]"
+                    className="w-full py-3 sm:py-3.5 bg-gradient-to-r from-[#F5C76B] via-[#FDE68A] to-[#F18BCB] text-[#211238] rounded-xl font-headline text-xs sm:text-sm font-black uppercase tracking-wider shadow-[0_4px_15px_rgba(245,199,107,0.4)] hover:brightness-110 active:scale-95 transition-all cursor-pointer min-h-[44px]"
                   >
                     Next Level
                   </button>
@@ -1584,7 +1696,7 @@ export const GameView: React.FC<GameViewProps> = ({
                   <button
                     type="button"
                     onClick={() => { triggerHaptic('click'); clearCurrentSession(); initBoard(); }}
-                    className="w-full py-3 sm:py-3.5 bg-gradient-to-r from-rose-400 to-red-500 text-white rounded-xl font-headline text-xs sm:text-sm font-black uppercase tracking-wider shadow-[0_4px_15px_rgba(244,63,94,0.4)] hover:brightness-110 active:scale-95 transition-all cursor-pointer min-h-[44px]"
+                    className="w-full py-3 sm:py-3.5 bg-gradient-to-r from-[#F43F5E] to-[#BE123C] text-white rounded-xl font-headline text-xs sm:text-sm font-black uppercase tracking-wider shadow-[0_4px_15px_rgba(244,63,94,0.4)] hover:brightness-110 active:scale-95 transition-all cursor-pointer min-h-[44px]"
                   >
                     Try Again
                   </button>
@@ -1592,7 +1704,7 @@ export const GameView: React.FC<GameViewProps> = ({
                 <button
                   type="button"
                   onClick={() => { triggerHaptic('click'); clearCurrentSession(); initBoard(); }}
-                  className="w-full py-2.5 sm:py-3 bg-[#11193b] border border-indigo-400/50 rounded-xl font-headline text-xs font-bold uppercase tracking-wider hover:bg-indigo-900 text-white cursor-pointer transition-all min-h-[44px]"
+                  className="w-full py-2.5 sm:py-3 bg-[#211238] border border-[rgba(196,167,255,0.25)] rounded-xl font-headline text-xs font-bold uppercase tracking-wider hover:bg-[#29203D] text-[#F8F5FF] cursor-pointer transition-all min-h-[44px]"
                 >
                   Replay
                 </button>
@@ -1600,14 +1712,14 @@ export const GameView: React.FC<GameViewProps> = ({
                   <button
                     type="button"
                     onClick={() => { triggerHaptic('click'); setTab('map'); }}
-                    className="flex-1 py-2 sm:py-2.5 bg-[#11193b] border border-indigo-500/40 rounded-xl font-headline text-xs font-bold uppercase tracking-wider hover:bg-indigo-950 text-violet-300 cursor-pointer transition-all min-h-[40px]"
+                    className="flex-1 py-2 sm:py-2.5 bg-[#211238] border border-[rgba(196,167,255,0.25)] rounded-xl font-headline text-xs font-bold uppercase tracking-wider hover:bg-[#29203D] text-[#C6BDD9] cursor-pointer transition-all min-h-[40px]"
                   >
-                    Levels
+                    Stages
                   </button>
                   <button
                     type="button"
                     onClick={() => { triggerHaptic('click'); setTab('home'); }}
-                    className="flex-1 py-2 sm:py-2.5 bg-[#11193b] border border-indigo-500/40 rounded-xl font-headline text-xs font-bold uppercase tracking-wider hover:bg-indigo-950 text-violet-300 cursor-pointer transition-all min-h-[40px]"
+                    className="flex-1 py-2 sm:py-2.5 bg-[#211238] border border-[rgba(196,167,255,0.25)] rounded-xl font-headline text-xs font-bold uppercase tracking-wider hover:bg-[#29203D] text-[#C6BDD9] cursor-pointer transition-all min-h-[40px]"
                   >
                     Home
                   </button>

@@ -53,7 +53,7 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
     <AnimatePresence>
       {isOpen && (
       <div
-        className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-[#090e24]/85 backdrop-blur-md select-none touch-manipulation"
+        className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-[#10152D]/85 backdrop-blur-md select-none touch-manipulation"
         onClick={(e) => {
           if (e.target === e.currentTarget) {
             triggerHaptic();
@@ -66,7 +66,7 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.92, y: 20 }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="relative w-full max-w-xs sm:max-w-sm bg-gradient-to-b from-[#19255a] via-[#141f4d] to-[#0f173b] border-2 border-indigo-400/60 p-4 sm:p-5 shadow-[0_10px_35px_rgba(59,130,246,0.35)] rounded-2xl text-white select-none max-h-[90dvh] overflow-y-auto"
+          className="relative w-full max-w-xs sm:max-w-sm bg-gradient-to-b from-[#29203D] via-[#211238] to-[#10152D] border-2 border-[rgba(196,167,255,0.30)] p-4 sm:p-5 shadow-[0_10px_35px_rgba(113,56,200,0.35)] rounded-2xl text-[#F8F5FF] select-none max-h-[90dvh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
@@ -75,7 +75,7 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
               triggerHaptic();
               onClose();
             }}
-            className="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-indigo-950/80 border border-indigo-400/40 text-violet-300 hover:text-white hover:bg-indigo-900 flex items-center justify-center transition-all cursor-pointer"
+            className="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-[#211238] border border-[rgba(196,167,255,0.25)] text-[#C6BDD9] hover:text-[#F8F5FF] hover:border-rose-400/50 flex items-center justify-center transition-all cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -83,10 +83,10 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
           {/* Profile Header Avatar & Identity */}
           <div className="flex flex-col items-center text-center mt-2 mb-4">
             <div className="relative">
-              <div className="w-18 h-18 rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 border-2 border-cyan-300 p-0.5 shadow-[0_0_20px_rgba(34,211,238,0.4)] flex items-center justify-center text-3xl font-headline font-black text-white">
+              <div className="w-18 h-18 rounded-2xl bg-gradient-to-br from-[#7138C8] via-[#A855F7] to-[#39D5E8] border-2 border-[#39D5E8] p-0.5 shadow-[0_0_20px_rgba(57,213,232,0.4)] flex items-center justify-center text-3xl font-headline font-black text-white">
                 {gameState.name ? gameState.name.slice(0, 2).toUpperCase() : 'P1'}
               </div>
-              <span className="absolute -bottom-1 -right-1 bg-amber-400 text-black font-headline text-[10px] px-2 py-0.5 rounded-full font-black border border-amber-200 shadow-md">
+              <span className="absolute -bottom-1 -right-1 bg-[#F5C76B] text-[#211238] font-headline text-[10px] px-2 py-0.5 rounded-full font-black border border-[#F5C76B]/60 shadow-md">
                 LVL {gameState.level}
               </span>
             </div>
@@ -103,11 +103,11 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
                   }}
                   maxLength={15}
                   autoFocus
-                  className="flex-1 bg-[#0c1433] border-2 border-cyan-400 rounded-lg px-2.5 py-1 text-sm font-headline font-bold text-white text-center focus:outline-none"
+                  className="flex-1 bg-[#211238] border-2 border-[#39D5E8] rounded-lg px-2.5 py-1 text-sm font-headline font-bold text-[#F8F5FF] text-center focus:outline-none"
                 />
                 <button
                   type="submit"
-                  className="p-1.5 bg-cyan-400 text-black rounded-lg hover:bg-cyan-300 font-bold transition-all"
+                  className="p-1.5 bg-[#39D5E8] text-[#211238] rounded-lg hover:brightness-110 font-bold transition-all"
                 >
                   <Check size={16} />
                 </button>
@@ -121,7 +121,7 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
               </form>
             ) : (
               <div className="mt-2.5 flex items-center justify-center gap-2">
-                <h2 className="font-headline text-xl font-extrabold uppercase text-white tracking-wide">
+                <h2 className="font-headline text-xl font-extrabold uppercase text-[#F8F5FF] tracking-wide">
                   {gameState.name || 'Anonymous Mage'}
                 </h2>
                 <button
@@ -129,7 +129,7 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
                     triggerHaptic();
                     setIsEditing(true);
                   }}
-                  className="text-cyan-400 hover:text-cyan-300 p-1"
+                  className="text-[#39D5E8] hover:text-[#579BFF] p-1"
                   title="Change Name"
                 >
                   <Edit3 size={14} />
@@ -138,22 +138,22 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
             )}
             {error && <p className="text-rose-400 text-xs font-semibold mt-1">{error}</p>}
             
-            <p className="text-xs text-cyan-300 font-semibold mt-0.5">
+            <p className="text-xs text-[#39D5E8] font-semibold mt-0.5">
               {gameState.level === 0 ? 'Novice Crystal Seeker' : `Realm Master • Rank ${gameState.level}`}
             </p>
           </div>
 
           {/* XP Progress Bar */}
-          <div className="bg-[#0e163b] border border-indigo-500/30 rounded-xl p-3 mb-4">
-            <div className="flex justify-between items-center text-[10px] font-headline font-bold uppercase tracking-wider text-violet-300 mb-1.5">
+          <div className="bg-[#211238] border border-[rgba(196,167,255,0.20)] rounded-xl p-3 mb-4">
+            <div className="flex justify-between items-center text-[10px] font-headline font-bold uppercase tracking-wider text-[#C4A7FF] mb-1.5">
               <span className="flex items-center gap-1">
-                <Sparkles size={12} className="text-amber-400" /> XP Progress
+                <Sparkles size={12} className="text-[#F5C76B]" /> XP Progress
               </span>
-              <span className="text-amber-300">{gameState.xp} / {gameState.xpMax}</span>
+              <span className="text-[#F5C76B]">{gameState.xp} / {gameState.xpMax}</span>
             </div>
-            <div className="w-full h-3 bg-[#182352] rounded-full overflow-hidden p-0.5 border border-indigo-400/30">
+            <div className="w-full h-3 bg-[#10152D] rounded-full overflow-hidden p-0.5 border border-[rgba(196,167,255,0.20)]">
               <div
-                className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 rounded-full shadow-[0_0_10px_rgba(34,211,238,0.7)] transition-all duration-300"
+                className="h-full bg-gradient-to-r from-[#39D5E8] via-[#7138C8] to-[#F5C76B] rounded-full shadow-[0_0_10px_rgba(57,213,232,0.6)] transition-all duration-300"
                 style={{ width: `${Math.min(100, (gameState.xp / gameState.xpMax) * 100)}%` }}
               />
             </div>
@@ -162,41 +162,41 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
           {/* Career Stats Grid (Required Section 8) */}
           <div className="grid grid-cols-2 gap-2.5 mb-4">
             {/* COINS */}
-            <div className="bg-[#121c47] border border-indigo-500/40 rounded-xl p-2.5 flex items-center justify-between">
+            <div className="bg-[#29203D] border border-[rgba(196,167,255,0.20)] rounded-xl p-2.5 flex items-center justify-between">
               <div>
-                <span className="text-[9px] font-headline font-bold uppercase text-amber-300 block">COINS</span>
-                <span className="font-headline font-black text-lg text-white">🪙 {gameState.coins}</span>
+                <span className="text-[9px] font-headline font-bold uppercase text-[#F5C76B] block">COINS</span>
+                <span className="font-headline font-black text-lg text-[#F8F5FF]">🪙 {gameState.coins}</span>
               </div>
             </div>
 
             {/* DIAMONDS */}
-            <div className="bg-[#121c47] border border-indigo-500/40 rounded-xl p-2.5 flex items-center justify-between">
+            <div className="bg-[#29203D] border border-[rgba(196,167,255,0.20)] rounded-xl p-2.5 flex items-center justify-between">
               <div>
-                <span className="text-[9px] font-headline font-bold uppercase text-cyan-300 block">DIAMONDS</span>
-                <span className="font-headline font-black text-lg text-white">💎 {gameState.diamonds}</span>
+                <span className="text-[9px] font-headline font-bold uppercase text-[#39D5E8] block">DIAMONDS</span>
+                <span className="font-headline font-black text-lg text-[#F8F5FF]">💎 {gameState.diamonds}</span>
               </div>
             </div>
 
             {/* SCORE */}
-            <div className="bg-[#121c47] border border-indigo-500/40 rounded-xl p-2.5 flex items-center justify-between">
+            <div className="bg-[#29203D] border border-[rgba(196,167,255,0.20)] rounded-xl p-2.5 flex items-center justify-between">
               <div>
-                <span className="text-[9px] font-headline font-bold uppercase text-violet-300 block">TOTAL SCORE</span>
-                <span className="font-headline font-black text-lg text-amber-400">{gameState.score}</span>
+                <span className="text-[9px] font-headline font-bold uppercase text-[#C4A7FF] block">TOTAL SCORE</span>
+                <span className="font-headline font-black text-lg text-[#F5C76B]">{gameState.score}</span>
               </div>
-              <Trophy size={18} className="text-amber-400" />
+              <Trophy size={18} className="text-[#F5C76B]" />
             </div>
 
             {/* LEVEL */}
-            <div className="bg-[#121c47] border border-indigo-500/40 rounded-xl p-2.5 flex items-center justify-between">
+            <div className="bg-[#29203D] border border-[rgba(196,167,255,0.20)] rounded-xl p-2.5 flex items-center justify-between">
               <div>
-                <span className="text-[9px] font-headline font-bold uppercase text-violet-300 block">PLAYER LEVEL</span>
-                <span className="font-headline font-black text-lg text-cyan-400">{gameState.level}</span>
+                <span className="text-[9px] font-headline font-bold uppercase text-[#C4A7FF] block">PLAYER LEVEL</span>
+                <span className="font-headline font-black text-lg text-[#39D5E8]">{gameState.level}</span>
               </div>
-              <Award size={18} className="text-cyan-400" />
+              <Award size={18} className="text-[#39D5E8]" />
             </div>
 
             {/* WINS */}
-            <div className="bg-[#121c47] border border-indigo-500/40 rounded-xl p-2.5 flex items-center justify-between">
+            <div className="bg-[#29203D] border border-[rgba(196,167,255,0.20)] rounded-xl p-2.5 flex items-center justify-between">
               <div>
                 <span className="text-[9px] font-headline font-bold uppercase text-emerald-400 block">WINS</span>
                 <span className="font-headline font-black text-lg text-emerald-400">{gameState.wins}</span>
@@ -205,7 +205,7 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
             </div>
 
             {/* LOSSES */}
-            <div className="bg-[#121c47] border border-indigo-500/40 rounded-xl p-2.5 flex items-center justify-between">
+            <div className="bg-[#29203D] border border-[rgba(196,167,255,0.20)] rounded-xl p-2.5 flex items-center justify-between">
               <div>
                 <span className="text-[9px] font-headline font-bold uppercase text-rose-400 block">LOSSES</span>
                 <span className="font-headline font-black text-lg text-rose-400">{gameState.losses}</span>
@@ -215,22 +215,22 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
           </div>
 
           {/* Games Played & Win Rate */}
-          <div className="bg-[#0e163b] border border-indigo-500/30 rounded-xl p-3 flex items-center justify-between mb-4">
+          <div className="bg-[#211238] border border-[rgba(196,167,255,0.20)] rounded-xl p-3 flex items-center justify-between mb-4">
             <div>
-              <span className="text-[10px] font-headline font-bold uppercase text-violet-300 block">GAMES PLAYED</span>
-              <span className="font-headline font-black text-xl text-white">{gameState.gamesPlayed}</span>
+              <span className="text-[10px] font-headline font-bold uppercase text-[#C4A7FF] block">GAMES PLAYED</span>
+              <span className="font-headline font-black text-xl text-[#F8F5FF]">{gameState.gamesPlayed}</span>
             </div>
             <div className="text-right">
-              <span className="text-[10px] font-headline font-bold uppercase text-violet-300 block">VICTORY RATE</span>
-              <span className="font-headline font-black text-base text-cyan-300">{winRate}%</span>
+              <span className="text-[10px] font-headline font-bold uppercase text-[#C4A7FF] block">VICTORY RATE</span>
+              <span className="font-headline font-black text-base text-[#39D5E8]">{winRate}%</span>
             </div>
           </div>
 
           {/* Achievements Section */}
-          <div className="border-t border-indigo-500/30 pt-3 text-left">
-            <h3 className="font-headline font-bold uppercase text-xs text-violet-300 mb-2 flex justify-between">
+          <div className="border-t border-[rgba(196,167,255,0.20)] pt-3 text-left">
+            <h3 className="font-headline font-bold uppercase text-xs text-[#C4A7FF] mb-2 flex justify-between">
               <span>Achievements</span>
-              <span className="text-cyan-300">
+              <span className="text-[#39D5E8]">
                 {gameState.achievements.filter(a => a.isUnlocked).length} / {gameState.achievements.length}
               </span>
             </h3>
@@ -240,31 +240,31 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
                   key={ach.id}
                   className={`flex items-center gap-2.5 p-2 rounded-xl border transition-all ${
                     ach.isUnlocked
-                      ? 'bg-[#18265a] border-cyan-500/40'
-                      : 'bg-[#0f173b]/50 border-indigo-950 opacity-60'
+                      ? 'bg-[#29203D] border-[#39D5E8]/40 shadow-sm'
+                      : 'bg-[#211238]/60 border-[rgba(196,167,255,0.12)] opacity-60'
                   }`}
                 >
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-base ${
-                    ach.isUnlocked ? 'bg-cyan-500/20 text-cyan-300' : 'bg-indigo-950/50 text-violet-300/40'
+                    ach.isUnlocked ? 'bg-[#39D5E8]/20 text-[#39D5E8]' : 'bg-[#211238] text-[#C6BDD9]/40'
                   }`}>
                     {ach.icon}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className={`font-headline text-xs font-bold leading-tight truncate ${ach.isUnlocked ? 'text-white' : 'text-violet-300/60'}`}>
+                    <h4 className={`font-headline text-xs font-bold leading-tight truncate ${ach.isUnlocked ? 'text-[#F8F5FF]' : 'text-[#C6BDD9]/60'}`}>
                       {ach.title}
                     </h4>
-                    <p className="text-[10px] text-violet-300/70 leading-normal truncate">
+                    <p className="text-[10px] text-[#C6BDD9] leading-normal truncate">
                       {ach.description}
                     </p>
                   </div>
                   <div className="text-right flex flex-col items-end shrink-0">
-                    <span className={`text-[10px] font-headline font-black ${ach.isUnlocked ? 'text-amber-400' : 'text-violet-300/40'}`}>
+                    <span className={`text-[10px] font-headline font-black ${ach.isUnlocked ? 'text-[#F5C76B]' : 'text-[#C6BDD9]/40'}`}>
                       {ach.rewardType === 'coins' ? '🪙' : '💎'} {ach.rewardValue}
                     </span>
                     {ach.isUnlocked ? (
-                      <span className="text-[8px] font-bold text-cyan-300 uppercase mt-0.5">Unlocked</span>
+                      <span className="text-[8px] font-bold text-[#39D5E8] uppercase mt-0.5">Unlocked</span>
                     ) : (
-                      <span className="text-[8px] font-bold text-violet-300/30 uppercase mt-0.5">Locked</span>
+                      <span className="text-[8px] font-bold text-[#C6BDD9]/40 uppercase mt-0.5">Locked</span>
                     )}
                   </div>
                 </div>

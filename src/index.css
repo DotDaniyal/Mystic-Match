@@ -2,69 +2,98 @@
 
 @import "tailwindcss";
 
+:root {
+  color-scheme: dark;
+
+  /* Primary Palette */
+  --color-mystic-deep: #211238;
+  --color-royal-violet: #7138C8;
+  --color-electric-purple: #A855F7;
+  --color-soft-lavender: #C4A7FF;
+  --color-midnight-navy: #10152D;
+
+  /* Accent Palette */
+  --color-magical-cyan: #39D5E8;
+  --color-neon-blue: #579BFF;
+  --color-soft-pink: #F18BCB;
+  --color-premium-gold: #F5C76B;
+
+  /* Supporting Colours */
+  --color-text-main: #F8F5FF;
+  --color-text-secondary: #C6BDD9;
+  --color-card-bg: #29203D;
+  --color-card-border: rgba(196, 167, 255, 0.20);
+  --color-card-border-glow: rgba(196, 167, 255, 0.45);
+
+  /* Semantic Surfaces */
+  --color-surface-base: #10152D;
+  --color-surface-gradient-start: #211238;
+  --color-surface-gradient-mid: #18102E;
+  --color-surface-gradient-end: #10152D;
+}
+
 @theme {
-  --color-primary: #3b82f6; /* Royal Blue */
-  --color-primary-dark: #1d4ed8;
-  --color-primary-deep: #0f1b3f; /* Deep Navy */
-  --color-primary-electric: #00d2ff;
-  
-  --color-secondary: #8b5cf6; /* Royal Purple */
-  --color-secondary-magenta: #d946ef;
-  --color-secondary-purple: #7c3aed;
-  
-  --color-accent-gold: #fbbf24; /* Bright Gold */
-  --color-accent-amber: #f59e0b;
-  --color-accent-yellow: #fde047;
-  --color-accent-cyan: #22d3ee; /* Electric Cyan */
-  
-  --color-emerald: #10b981;
-  --color-ruby: #f43f5e;
-  
-  --color-surface: #101a42; /* Rich Deep Navy Blue - Never Flat Black */
-  --color-surface-container: #172459; /* Rich Royal Navy / Indigo */
-  --color-surface-container-low: #121c47;
-  --color-surface-container-high: #1d2d6d;
-  --color-surface-card: #1a2861;
-  
+  --color-mystic-deep: #211238;
+  --color-royal-violet: #7138C8;
+  --color-electric-purple: #A855F7;
+  --color-soft-lavender: #C4A7FF;
+  --color-midnight-navy: #10152D;
+
+  --color-magical-cyan: #39D5E8;
+  --color-neon-blue: #579BFF;
+  --color-soft-pink: #F18BCB;
+  --color-premium-gold: #F5C76B;
+
+  --color-text-main: #F8F5FF;
+  --color-text-secondary: #C6BDD9;
+  --color-card-bg: #29203D;
+  --color-card-border: rgba(196, 167, 255, 0.20);
+
   --font-headline: "Cinzel Decorative", "Plus Jakarta Sans", system-ui, sans-serif;
   --font-body: "Plus Jakarta Sans", system-ui, sans-serif;
 }
 
-/* Premium Fantasy Mystic Match Card Effects - Rich Navy & Purple with Brilliant Glowing Borders */
+/* Premium Fantasy Mystic Match Card Effects - Deep Mystic Purple & Magical Cyan with Controlled Ambient Lighting */
+.card-mystic-card {
+  background-color: #29203D;
+  border: 1px solid rgba(196, 167, 255, 0.20);
+  box-shadow: 0 4px 18px rgba(33, 18, 56, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
 .card-glowing-purple {
-  background: linear-gradient(135deg, #1d2157 0%, #151842 100%);
-  border: 2px solid rgba(168, 85, 247, 0.55);
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, #2e1a4d 0%, #211238 100%);
+  border: 1.5px solid rgba(168, 85, 247, 0.5);
+  box-shadow: 0 4px 20px rgba(113, 56, 200, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .card-glowing-blue {
-  background: linear-gradient(135deg, #162863 0%, #101f4c 100%);
-  border: 2px solid rgba(59, 130, 246, 0.6);
-  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #1b264f 0%, #10152D 100%);
+  border: 1.5px solid rgba(87, 155, 255, 0.55);
+  box-shadow: 0 4px 20px rgba(87, 155, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .card-glowing-gold {
-  background: linear-gradient(135deg, #302410 0%, #1f1708 100%);
-  border: 2px solid rgba(251, 191, 36, 0.7);
-  box-shadow: 0 4px 22px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #382710 0%, #211238 100%);
+  border: 1.5px solid rgba(245, 199, 107, 0.6);
+  box-shadow: 0 4px 22px rgba(245, 199, 107, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .card-glowing-cyan {
-  background: linear-gradient(135deg, #0e3052 0%, #092038 100%);
-  border: 2px solid rgba(34, 211, 238, 0.65);
-  box-shadow: 0 4px 22px rgba(6, 182, 212, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #132d42 0%, #10152D 100%);
+  border: 1.5px solid rgba(57, 213, 232, 0.55);
+  box-shadow: 0 4px 22px rgba(57, 213, 232, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .mystic-gradient-bg {
-  background: radial-gradient(circle at 50% 0%, #203175 0%, #111c49 60%, #0a112e 100%);
+  background: radial-gradient(circle at 50% 0%, #211238 0%, #18102E 60%, #10152D 100%);
 }
 
 .text-glow-cyan {
-  text-shadow: 0 0 12px rgba(34, 211, 238, 0.85);
+  text-shadow: 0 0 12px rgba(57, 213, 232, 0.85);
 }
 
 .text-glow-gold {
-  text-shadow: 0 0 12px rgba(251, 191, 36, 0.9);
+  text-shadow: 0 0 12px rgba(245, 199, 107, 0.9);
 }
 
 .text-glow-purple {
@@ -72,26 +101,26 @@
 }
 
 .text-glow-blue {
-  text-shadow: 0 0 14px rgba(59, 130, 246, 0.85);
+  text-shadow: 0 0 14px rgba(87, 155, 255, 0.85);
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar with Soft Lavender & Royal Violet Styling */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(16, 26, 66, 0.6);
+  background: rgba(16, 21, 45, 0.6);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.6);
+  background: rgba(113, 56, 200, 0.5);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.85);
+  background: rgba(168, 85, 247, 0.8);
 }
 
 /* Root Viewport, Mobile Reset & Touch Discipline */
@@ -106,6 +135,12 @@ html, body, #root {
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
+  color-scheme: dark;
+  background-color: #10152D;
+  color: #F8F5FF;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Ensure 100dvh / 100svh support for modern mobile browsers */
@@ -160,34 +195,25 @@ html, body, #root {
   padding-right: max(env(safe-area-inset-right, 0px), 0px);
 }
 
-/* Touch action containment for board and interactive surfaces */
-.touch-manipulation {
-  touch-action: manipulation;
-}
-
-.touch-none {
-  touch-action: none;
-}
-
 /* Glowing Pulse Animation for Bottom Play Navigation Button */
 @keyframes glowing-pulse {
   0%, 100% {
-    box-shadow: 0 0 4px rgba(34, 211, 238, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 6px rgba(57, 213, 232, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     transform: scale(1);
-    border-color: rgba(34, 211, 238, 0.2);
+    border-color: rgba(57, 213, 232, 0.3);
   }
   50% {
-    box-shadow: 0 0 12px rgba(34, 211, 238, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    transform: scale(1.05);
-    border-color: rgba(34, 211, 238, 0.8);
+    box-shadow: 0 0 16px rgba(57, 213, 232, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transform: scale(1.04);
+    border-color: rgba(57, 213, 232, 0.85);
   }
 }
 
 .animate-glow-pulse {
   animation: glowing-pulse 2s infinite ease-in-out;
-  background-color: rgba(22, 35, 84, 0.6) !important;
-  color: #22d3ee !important; /* Glow text / icon to cyan */
-  border: 1.5px solid rgba(34, 211, 238, 0.4) !important;
+  background-color: rgba(41, 32, 61, 0.85) !important;
+  color: #39D5E8 !important; /* Glow text / icon to magical cyan */
+  border: 1.5px solid rgba(57, 213, 232, 0.6) !important;
 }
 
 /* Fluid GameView & Internal Board Container Scaling */
@@ -225,12 +251,12 @@ html, body, #root {
 
 @keyframes glowFlare {
   0%, 100% {
-    box-shadow: 0 0 25px rgba(251, 191, 36, 0.4), inset 0 0 15px rgba(34, 211, 238, 0.4);
+    box-shadow: 0 0 25px rgba(245, 199, 107, 0.4), inset 0 0 15px rgba(57, 213, 232, 0.3);
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 60px rgba(251, 191, 36, 0.9), inset 0 0 35px rgba(34, 211, 238, 0.9);
-    transform: scale(1.04);
+    box-shadow: 0 0 50px rgba(245, 199, 107, 0.8), inset 0 0 30px rgba(57, 213, 232, 0.7);
+    transform: scale(1.03);
   }
 }
 
@@ -277,10 +303,10 @@ html, body, #root {
 }
 
 .game-board-container {
-  width: min(98cqmin, 94vw, 390px);
-  height: min(98cqmin, 94vw, 390px);
-  max-width: min(98cqmin, 94vw, 390px);
-  max-height: min(98cqmin, 94vw, 390px);
+  width: min(98cqmin, 94vw, 440px);
+  height: min(98cqmin, 94vw, 440px);
+  max-width: min(98cqmin, 94vw, 440px);
+  max-height: min(98cqmin, 94vw, 440px);
   aspect-ratio: 1 / 1 !important;
   flex-shrink: 0;
   min-width: 0;
@@ -289,91 +315,159 @@ html, body, #root {
   margin: auto;
 }
 
-/* Forced Portrait CSS Orientation Message Layer */
-.orientation-lock-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  background: radial-gradient(circle at center, #131d4d 0%, #080d24 85%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  touch-action: none;
-  user-select: none;
-}
-
-/* Display overlay whenever device is in landscape mode with height restricted (mobile landscape) or touch device in landscape */
-@media screen and (orientation: landscape) and (max-height: 640px) and (hover: none) and (pointer: coarse),
-       screen and (orientation: landscape) and (max-height: 540px),
-       screen and (orientation: landscape) and (max-aspect-ratio: 13/9) and (max-height: 680px) {
-  .orientation-lock-overlay {
-    display: flex !important;
-  }
-}
-
-.orientation-card {
+/* Adaptive App Shell for Standard Mobile, Flip (Cover & Flex), Fold (Cover & Unfolded), Landscape, and Desktop */
+.app-shell-container {
+  width: 100%;
+  height: 100dvh;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  max-width: 24rem;
-  width: 100%;
-  padding: 1.75rem 1.5rem;
-  border-radius: 1.5rem;
-  background: linear-gradient(180deg, rgba(26, 38, 92, 0.95) 0%, rgba(17, 26, 68, 0.95) 100%);
-  border: 2px solid rgba(99, 102, 241, 0.5);
-  box-shadow: 0 0 50px rgba(59, 130, 246, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  text-align: center;
-  animation: cardFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.orientation-icon-container {
+  overflow: hidden;
   position: relative;
+  background: linear-gradient(180deg, #211238 0%, #18102E 50%, #10152D 100%);
+  color: #F8F5FF;
+}
+
+/* Tablet / Unfolded Foldable / Desktop Portrait & Standard Window */
+@media screen and (min-width: 640px) and (min-height: 620px) {
+  .app-shell-container {
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+    height: min(95dvh, 900px);
+    border-radius: 1.5rem;
+    border: 1.5px solid rgba(196, 167, 255, 0.25);
+    box-shadow: 0 12px 50px rgba(16, 21, 45, 0.8), 0 0 35px rgba(113, 56, 200, 0.2);
+  }
+}
+
+/* Unfolded Foldable (Square-ish aspect ratio like Galaxy Z Fold / Pixel Fold) */
+@media screen and (min-width: 600px) and (max-width: 960px) and (min-height: 580px) {
+  .app-shell-container {
+    max-width: min(94vw, 42rem);
+    height: min(96dvh, 920px);
+    border-radius: 1.5rem;
+    border: 1.5px solid rgba(196, 167, 255, 0.25);
+    box-shadow: 0 12px 50px rgba(16, 21, 45, 0.8), 0 0 35px rgba(113, 56, 200, 0.2);
+  }
+}
+
+/* Landscape Mobile & Flip Flex / Cover Wide Screens */
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .app-shell-container {
+    max-width: min(98vw, 56rem);
+    height: 100dvh;
+    border-radius: 0;
+    border-width: 0;
+  }
+}
+
+/* Adaptive GameView Layout: Vertical in Portrait, Side-by-Side Split in Landscape / Short Wide Screens */
+.game-view-adaptive {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 6rem;
-  height: 6rem;
-  margin-bottom: 0.25rem;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  justify-content: space-between;
 }
 
-.orientation-phone-anim {
-  animation: rotatePhone 2.6s ease-in-out infinite;
-  transform-origin: center center;
+.game-main-split {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  justify-content: space-between;
 }
 
-.orientation-rotation-arrow {
-  position: absolute;
-  top: -4px;
-  right: -6px;
-  pointer-events: none;
+.game-side-controls {
+  display: contents;
 }
 
-@keyframes rotatePhone {
-  0%, 15% {
-    transform: rotate(90deg) scale(0.95);
+.game-hud-adaptive {
+  order: 1;
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.25rem;
+}
+
+.board-scaling-wrapper {
+  order: 2;
+}
+
+.game-bottom-controls {
+  order: 3;
+  width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+/* Ultra-narrow screens (Galaxy Z Fold outer cover screen <= 320px) */
+@media screen and (max-width: 330px) {
+  .game-hud-adaptive {
+    gap: 0.2rem;
   }
-  45%, 70% {
-    transform: rotate(0deg) scale(1.05);
-  }
-  85%, 100% {
-    transform: rotate(90deg) scale(0.95);
+  .p-safe {
+    padding-left: max(env(safe-area-inset-left, 0px), 4px);
+    padding-right: max(env(safe-area-inset-right, 0px), 4px);
   }
 }
 
-@keyframes cardFadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.92) translateY(10px);
+/* Short-height screens & Flip Cover / Flex Mode (max-height: 560px in portrait) */
+@media screen and (max-height: 560px) and (orientation: portrait) {
+  .compact-header {
+    height: 2.5rem !important;
   }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
+  .compact-nav {
+    height: 2.75rem !important;
   }
+}
+
+/* Landscape Mobile & Short Wide Viewports (Flip Flex, Landscape Phone): Side-by-Side Board + Controls */
+@media screen and (orientation: landscape) and (max-height: 600px) and (min-width: 480px) {
+  .compact-header {
+    height: 2.5rem !important;
+  }
+  .compact-nav {
+    height: 2.75rem !important;
+  }
+  .game-main-split {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 0.65rem;
+    padding-top: 0.15rem;
+    padding-bottom: 0.15rem;
+  }
+  .board-scaling-wrapper {
+    order: 1;
+    flex: 1 1 0%;
+    height: 100%;
+  }
+  .game-side-controls {
+    order: 2;
+    display: flex;
+    flex-direction: column;
+    width: min(46%, 290px);
+    height: 100%;
+    justify-content: space-between;
+    gap: 0.35rem;
+    flex-shrink: 0;
+  }
+  .game-hud-adaptive {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem;
+    margin-bottom: 0 !important;
+  }
+}
+
+/* Non-blocking orientation layer (hidden by default as all orientations and flip/fold screens are supported) */
+.orientation-lock-overlay {
+  display: none !important;
 }
 
 .animate-spin-slow {
@@ -383,6 +477,3 @@ html, body, #root {
 .animate-spin-once {
   animation: spin 0.8s ease-in-out 1;
 }
-
-
-

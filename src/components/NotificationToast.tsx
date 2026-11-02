@@ -22,22 +22,22 @@ export const NotificationToast: React.FC<NotificationToastProps> = ({ title, mes
         initial={{ opacity: 0, y: -50, scale: 0.9 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -20, scale: 0.95 }}
-        className="w-full max-w-sm bg-primary border-3 border-primary-fixed text-white p-4 shadow-[4px_4px_0px_#ffcc00] flex items-start gap-3 pointer-events-auto"
+        className="w-full max-w-sm bg-gradient-to-r from-[#29203D] via-[#211238] to-[#10152D] border-2 border-[rgba(196,167,255,0.30)] text-[#F8F5FF] p-3.5 sm:p-4 rounded-2xl shadow-[0_10px_35px_rgba(113,56,200,0.35)] flex items-start gap-3 pointer-events-auto backdrop-blur-md"
       >
-        <div className="w-8 h-8 rounded bg-primary-fixed-dim/20 flex items-center justify-center text-primary-fixed mt-0.5 border border-primary-fixed/40">
-          <Bell size={16} className="text-primary-fixed animate-swing" />
+        <div className="w-8 h-8 rounded-xl bg-[#7138C8]/30 flex items-center justify-center text-[#39D5E8] mt-0.5 border border-[#39D5E8]/40 shrink-0">
+          <Bell size={16} className="text-[#39D5E8] animate-bounce" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-headline font-black text-xs uppercase tracking-wider text-primary-fixed leading-tight">
+          <h4 className="font-headline font-black text-xs uppercase tracking-wider text-[#F5C76B] leading-tight">
             {title}
           </h4>
-          <p className="text-[10px] text-white/95 leading-normal mt-0.5 font-medium">
+          <p className="text-[10px] text-[#C6BDD9] leading-normal mt-0.5 font-medium">
             {message}
           </p>
         </div>
         <button
           onClick={onClose}
-          className="text-white/60 hover:text-white hover:bg-white/10 rounded p-1 transition-colors"
+          className="text-[#C6BDD9] hover:text-[#F8F5FF] hover:bg-white/10 rounded-lg p-1 transition-colors cursor-pointer"
         >
           <X size={14} />
         </button>

@@ -132,51 +132,47 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   };
 
   return (
-    <div className="flex flex-col w-full select-none relative z-10 pb-4 text-white gap-y-3 sm:gap-y-4">
-      <h3 className="font-headline font-bold uppercase text-xs text-violet-300 mb-2 tracking-wider">
+    <div className="flex flex-col w-full select-none relative z-10 pb-4 text-[#F8F5FF] gap-y-3 sm:gap-y-4">
+      <h3 className="font-headline font-bold uppercase text-xs text-[#C4A7FF] mb-2 tracking-wider">
         Game Configuration & Preferences
       </h3>
 
       {/* Network & Local Storage Synchronization Module */}
-      
-      <div className="bg-[#142054] border border-indigo-400/50 rounded-2xl p-4 mb-4 shadow-[0_4px_20px_rgba(59,130,246,0.2)]">
-        
-      <div className="flex items-center justify-between mb-2">
-          
-      <div className="flex items-center gap-2">
+      <div className="bg-[#29203D] border border-[rgba(196,167,255,0.25)] rounded-2xl p-4 mb-4 shadow-[0_4px_20px_rgba(113,56,200,0.2)]">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
             {gameState.offline ? (
-              <WifiOff className="text-amber-400" size={18} />
+              <WifiOff className="text-[#F5C76B]" size={18} />
             ) : (
-              <Wifi className="text-cyan-400" size={18} />
+              <Wifi className="text-[#39D5E8]" size={18} />
             )}
-            <h4 className="font-headline font-black text-xs uppercase text-white">
+            <h4 className="font-headline font-black text-xs uppercase text-[#F8F5FF]">
               Offline Storage Mode
             </h4>
           </div>
           <button
             onClick={toggleOffline}
             className={`px-3 py-1 text-[10px] font-headline font-bold rounded-lg uppercase transition-all ${
-              gameState.offline ? 'bg-amber-400 text-black' : 'bg-cyan-400 text-slate-950'
+              gameState.offline ? 'bg-[#F5C76B] text-[#211238]' : 'bg-[#39D5E8] text-[#211238]'
             }`}
           >
             {gameState.offline ? 'Simulate Offline' : 'Online'}
           </button>
         </div>
-        <p className="text-xs font-semibold text-violet-200 leading-relaxed mb-3">
+        <p className="text-xs font-semibold text-[#C6BDD9] leading-relaxed mb-3">
           {gameState.offline
             ? 'Crystals and matching levels are stored inside local storage. Turn online to simulate cloud synchronization.'
             : 'Automatic browser local storage persistence is active. All scores and levels are safely preserved.'}
         </p>
 
         {gameState.syncPending && (
-          
-      <div className="bg-[#0e173b] border border-cyan-400/40 rounded-xl p-2 flex items-center justify-between gap-2">
-            <span className="text-[10px] font-headline font-bold text-cyan-300 flex items-center gap-1.5 animate-pulse">
+          <div className="bg-[#211238] border border-[#39D5E8]/40 rounded-xl p-2 flex items-center justify-between gap-2">
+            <span className="text-[10px] font-headline font-bold text-[#39D5E8] flex items-center gap-1.5 animate-pulse">
               🔄 Sync queue waiting...
             </span>
             <button
               onClick={triggerSync}
-              className="px-2.5 py-1 bg-cyan-400 text-slate-950 rounded-lg font-headline text-[9px] font-bold uppercase hover:bg-cyan-300"
+              className="px-2.5 py-1 bg-[#39D5E8] text-[#211238] rounded-lg font-headline text-[9px] font-bold uppercase hover:brightness-110"
             >
               Force Sync
             </button>
@@ -185,10 +181,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* Player Profile Identity Module */}
-      
-      <div className="bg-[#142054] border border-indigo-400/50 rounded-2xl p-4 mb-4 shadow-[0_4px_20px_rgba(59,130,246,0.2)]">
-        <h4 className="font-headline font-black text-xs uppercase text-white mb-2 leading-none flex items-center gap-1.5">
-          <User size={14} className="text-cyan-400" />
+      <div className="bg-[#29203D] border border-[rgba(196,167,255,0.25)] rounded-2xl p-4 mb-4 shadow-[0_4px_20px_rgba(113,56,200,0.2)]">
+        <h4 className="font-headline font-black text-xs uppercase text-[#F8F5FF] mb-2 leading-none flex items-center gap-1.5">
+          <User size={14} className="text-[#39D5E8]" />
           Change Player Name
         </h4>
         <form onSubmit={handleNameChange} className="flex gap-2">
@@ -201,11 +196,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             }}
             maxLength={15}
             placeholder="New player name..."
-            className="flex-1 bg-[#0c1433] border-2 border-indigo-400/50 rounded-xl text-xs font-headline font-bold px-3 py-2 text-white focus:outline-none focus:border-cyan-400"
+            className="flex-1 bg-[#211238] border-2 border-[rgba(196,167,255,0.25)] rounded-xl text-xs font-headline font-bold px-3 py-2 text-[#F8F5FF] focus:outline-none focus:border-[#39D5E8]"
           />
           <button
             type="submit"
-            className="px-4 py-2 bg-cyan-400 text-slate-950 rounded-xl font-headline text-[10px] font-black uppercase hover:bg-cyan-300 cursor-pointer transition-all shrink-0 flex items-center gap-1"
+            className="px-4 py-2 bg-[#39D5E8] text-[#211238] rounded-xl font-headline text-[10px] font-black uppercase hover:brightness-110 cursor-pointer transition-all shrink-0 flex items-center gap-1"
           >
             {savedSuccess ? <Check size={14} /> : 'Save'}
           </button>
@@ -218,58 +213,49 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* System Preference Toggles */}
-      
       <div className="grid grid-cols-1 gap-3 mb-4">
         {/* Dark Mode */}
-        
-      <div className="bg-[#142054] border border-indigo-400/40 rounded-xl p-3 flex items-center justify-between">
-          
-      <div className="flex items-center gap-2.5">
-            {gameState.darkMode ? <Moon size={16} className="text-cyan-400" /> : <Sun size={16} className="text-amber-400" />}
-            
-      <div>
-              <h5 className="font-headline font-bold text-xs uppercase leading-none">Night Mode</h5>
-              <p className="text-[10px] text-violet-300 mt-0.5">Reduced eye strain in low-light environments</p>
+        <div className="bg-[#29203D] border border-[rgba(196,167,255,0.20)] rounded-xl p-3 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            {gameState.darkMode ? <Moon size={16} className="text-[#39D5E8]" /> : <Sun size={16} className="text-[#F5C76B]" />}
+            <div>
+              <h5 className="font-headline font-bold text-xs uppercase leading-none text-[#F8F5FF]">Night Mode</h5>
+              <p className="text-[10px] text-[#C6BDD9] mt-0.5">Reduced eye strain in low-light environments</p>
             </div>
           </div>
           <input
             type="checkbox"
             checked={gameState.darkMode}
             onChange={toggleDarkMode}
-            className="w-5 h-5 accent-cyan-400 cursor-pointer"
+            className="w-5 h-5 accent-[#39D5E8] cursor-pointer"
           />
         </div>
 
         {/* Difficulty Mode Selection Module (Easy, Medium, Hard, Extreme) */}
-        
-      <div className="bg-[#142054] border border-indigo-400/50 rounded-2xl p-3 sm:p-4 shadow-[0_4px_20px_rgba(59,130,246,0.2)]">
-          
-      <div className="flex items-center justify-between mb-2">
-            
-      <div className="flex items-center gap-2">
-              <Sparkles size={16} className="text-amber-400 animate-pulse shrink-0" />
-              
-      <div>
-                <h4 className="font-headline font-black text-xs uppercase text-white leading-none">
+        <div className="bg-[#29203D] border border-[rgba(196,167,255,0.25)] rounded-2xl p-3 sm:p-4 shadow-[0_4px_20px_rgba(113,56,200,0.2)]">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Sparkles size={16} className="text-[#F5C76B] animate-pulse shrink-0" />
+              <div>
+                <h4 className="font-headline font-black text-xs uppercase text-[#F8F5FF] leading-none">
                   Game Difficulty Mode
                 </h4>
-                <p className="text-[10px] text-violet-300 mt-0.5">
+                <p className="text-[10px] text-[#C6BDD9] mt-0.5">
                   Adjusts moves allowance and objective thresholds
                 </p>
               </div>
             </div>
             <span className={`px-2 py-0.5 rounded-full text-[9px] font-headline font-black uppercase tracking-wider ${
               currentDifficulty === 'easy' ? 'bg-emerald-400/20 text-emerald-300 border border-emerald-400/50' :
-              currentDifficulty === 'medium' ? 'bg-cyan-400/20 text-cyan-300 border border-cyan-400/50' :
-              currentDifficulty === 'hard' ? 'bg-amber-400/20 text-amber-300 border border-amber-400/50' :
+              currentDifficulty === 'medium' ? 'bg-[#39D5E8]/20 text-[#39D5E8] border border-[#39D5E8]/50' :
+              currentDifficulty === 'hard' ? 'bg-[#F5C76B]/20 text-[#F5C76B] border border-[#F5C76B]/50' :
               'bg-rose-500/20 text-rose-300 border border-rose-500/50 animate-pulse'
             }`}>
               {currentDifficulty}
             </span>
           </div>
 
-          
-      <div className="grid grid-cols-2 gap-2 mt-3">
+          <div className="grid grid-cols-2 gap-2 mt-3">
             {/* Easy */}
             <button
               type="button"
@@ -277,18 +263,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[64px] ${
                 currentDifficulty === 'easy'
                   ? 'bg-gradient-to-b from-emerald-950/80 to-emerald-900/60 border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.3)] ring-1 ring-emerald-400'
-                  : 'bg-[#0e173b]/80 border-indigo-500/30 hover:border-emerald-400/50 hover:bg-[#121c47]'
+                  : 'bg-[#211238]/80 border-[rgba(196,167,255,0.20)] hover:border-emerald-400/50 hover:bg-[#29203D]'
               }`}
             >
-              
-      <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between">
                 <span className="font-headline font-black text-xs uppercase text-emerald-300">
                   Easy
                 </span>
                 <span className="text-[10px]">🌱</span>
               </div>
-              
-      <div className="text-[9px] text-emerald-200/80 mt-1">
+              <div className="text-[9px] text-emerald-200/80 mt-1">
                 <span className="font-bold text-white">60 moves</span> • lowered targets
               </div>
             </button>
@@ -299,19 +283,17 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               onClick={() => setDifficulty('medium')}
               className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[64px] ${
                 currentDifficulty === 'medium'
-                  ? 'bg-gradient-to-b from-cyan-950/80 to-blue-900/60 border-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.3)] ring-1 ring-cyan-400'
-                  : 'bg-[#0e173b]/80 border-indigo-500/30 hover:border-cyan-400/50 hover:bg-[#121c47]'
+                  ? 'bg-gradient-to-b from-[#211238] to-[#1a1c42] border-[#39D5E8] shadow-[0_0_12px_rgba(57,213,232,0.3)] ring-1 ring-[#39D5E8]'
+                  : 'bg-[#211238]/80 border-[rgba(196,167,255,0.20)] hover:border-[#39D5E8]/50 hover:bg-[#29203D]'
               }`}
             >
-              
-      <div className="flex items-center justify-between">
-                <span className="font-headline font-black text-xs uppercase text-cyan-300">
+              <div className="flex items-center justify-between">
+                <span className="font-headline font-black text-xs uppercase text-[#39D5E8]">
                   Medium
                 </span>
                 <span className="text-[10px]">⚖️</span>
               </div>
-              
-      <div className="text-[9px] text-cyan-200/80 mt-1">
+              <div className="text-[9px] text-[#C6BDD9] mt-1">
                 <span className="font-bold text-white">45 moves</span> • standard balance
               </div>
             </button>
@@ -322,19 +304,17 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               onClick={() => setDifficulty('hard')}
               className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[64px] ${
                 currentDifficulty === 'hard'
-                  ? 'bg-gradient-to-b from-amber-950/80 to-orange-950/60 border-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.3)] ring-1 ring-amber-400'
-                  : 'bg-[#0e173b]/80 border-indigo-500/30 hover:border-amber-400/50 hover:bg-[#121c47]'
+                  ? 'bg-gradient-to-b from-[#382414]/90 to-[#29203D] border-[#F5C76B] shadow-[0_0_12px_rgba(245,199,107,0.3)] ring-1 ring-[#F5C76B]'
+                  : 'bg-[#211238]/80 border-[rgba(196,167,255,0.20)] hover:border-[#F5C76B]/50 hover:bg-[#29203D]'
               }`}
             >
-              
-      <div className="flex items-center justify-between">
-                <span className="font-headline font-black text-xs uppercase text-amber-300">
+              <div className="flex items-center justify-between">
+                <span className="font-headline font-black text-xs uppercase text-[#F5C76B]">
                   Hard
                 </span>
                 <span className="text-[10px]">⚡</span>
               </div>
-              
-      <div className="text-[9px] text-amber-200/80 mt-1">
+              <div className="text-[9px] text-[#F5C76B]/90 mt-1">
                 <span className="font-bold text-white">35 moves</span> • +30% targets
               </div>
             </button>
@@ -345,19 +325,17 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               onClick={() => setDifficulty('extreme')}
               className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[64px] ${
                 currentDifficulty === 'extreme'
-                  ? 'bg-gradient-to-b from-rose-950/80 to-red-950/60 border-rose-400 shadow-[0_0_12px_rgba(251,113,133,0.3)] ring-1 ring-rose-400'
-                  : 'bg-[#0e173b]/80 border-indigo-500/30 hover:border-rose-400/50 hover:bg-[#121c47]'
+                  ? 'bg-gradient-to-b from-rose-950/80 to-[#29203D] border-rose-400 shadow-[0_0_12px_rgba(251,113,133,0.3)] ring-1 ring-rose-400'
+                  : 'bg-[#211238]/80 border-[rgba(196,167,255,0.20)] hover:border-rose-400/50 hover:bg-[#29203D]'
               }`}
             >
-              
-      <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between">
                 <span className="font-headline font-black text-xs uppercase text-rose-300">
                   Extreme
                 </span>
                 <span className="text-[10px]">🔥</span>
               </div>
-              
-      <div className="text-[9px] text-rose-200/80 mt-1">
+              <div className="text-[9px] text-rose-200/80 mt-1">
                 <span className="font-bold text-white">25 moves</span> • +60% targets
               </div>
             </button>
@@ -365,35 +343,29 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </div>
 
         {/* High Contrast */}
-        
-      <div className="bg-[#142054] border border-indigo-400/40 rounded-xl p-3 flex items-center justify-between">
-          
-      <div className="flex items-center gap-2.5">
-            <Accessibility size={16} className="text-amber-400" />
-            
-      <div>
-              <h5 className="font-headline font-bold text-xs uppercase leading-none">High Contrast Mode</h5>
-              <p className="text-[10px] text-violet-300 mt-0.5">Increases text sizing and border glows</p>
+        <div className="bg-[#29203D] border border-[rgba(196,167,255,0.20)] rounded-xl p-3 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <Accessibility size={16} className="text-[#F5C76B]" />
+            <div>
+              <h5 className="font-headline font-bold text-xs uppercase leading-none text-[#F8F5FF]">High Contrast Mode</h5>
+              <p className="text-[10px] text-[#C6BDD9] mt-0.5">Increases text sizing and border glows</p>
             </div>
           </div>
           <input
             type="checkbox"
             checked={gameState.highContrast}
             onChange={toggleHighContrast}
-            className="w-5 h-5 accent-amber-400 cursor-pointer"
+            className="w-5 h-5 accent-[#F5C76B] cursor-pointer"
           />
         </div>
 
         {/* Screen Reader Support */}
-        
-      <div className="bg-[#142054] border border-indigo-400/40 rounded-xl p-3 flex items-center justify-between">
-          
-      <div className="flex items-center gap-2.5">
+        <div className="bg-[#29203D] border border-[rgba(196,167,255,0.20)] rounded-xl p-3 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
             <Volume2 size={16} className="text-emerald-400" />
-            
-      <div>
-              <h5 className="font-headline font-bold text-xs uppercase leading-none">Speech Screen Reader</h5>
-              <p className="text-[10px] text-violet-300 mt-0.5">Speaks navigation changes and game alerts</p>
+            <div>
+              <h5 className="font-headline font-bold text-xs uppercase leading-none text-[#F8F5FF]">Speech Screen Reader</h5>
+              <p className="text-[10px] text-[#C6BDD9] mt-0.5">Speaks navigation changes and game alerts</p>
             </div>
           </div>
           <input
@@ -405,17 +377,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </div>
 
         {/* Push Notifications Test Controls */}
-        
-      <div className="bg-[#142054] border border-indigo-400/40 rounded-xl p-3">
-          
-      <div className="flex items-center justify-between mb-2">
-            
-      <div className="flex items-center gap-2.5">
-              <Bell size={16} className="text-cyan-400" />
-              
-      <div>
-                <h5 className="font-headline font-bold text-xs uppercase leading-none">In-App Notifications</h5>
-                <p className="text-[10px] text-violet-300 mt-0.5">Alerts for quests, syncs, and energy</p>
+        <div className="bg-[#29203D] border border-[rgba(196,167,255,0.20)] rounded-xl p-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2.5">
+              <Bell size={16} className="text-[#39D5E8]" />
+              <div>
+                <h5 className="font-headline font-bold text-xs uppercase leading-none text-[#F8F5FF]">In-App Notifications</h5>
+                <p className="text-[10px] text-[#C6BDD9] mt-0.5">Alerts for quests, syncs, and energy</p>
               </div>
             </div>
             <input
@@ -425,13 +393,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 triggerHaptic();
                 setGameState((p) => ({ ...p, notificationsEnabled: !p.notificationsEnabled }));
               }}
-              className="w-5 h-5 accent-cyan-400 cursor-pointer"
+              className="w-5 h-5 accent-[#39D5E8] cursor-pointer"
             />
           </div>
 
           {gameState.notificationsEnabled && (
-            
-      <div className="mt-2.5 flex gap-2">
+            <div className="mt-2.5 flex gap-2">
               <button
                 onClick={() =>
                   triggerPushNotification(
@@ -439,7 +406,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                     'A legendary chest surfaced in the volcano peaks! Open for 15 minutes.'
                   )
                 }
-                className="flex-1 py-1.5 bg-[#0e173b] border border-indigo-400/40 text-cyan-300 rounded-lg font-headline text-[9px] font-bold uppercase text-center hover:bg-indigo-900"
+                className="flex-1 py-1.5 bg-[#211238] border border-[rgba(196,167,255,0.20)] text-[#39D5E8] rounded-lg font-headline text-[9px] font-bold uppercase text-center hover:bg-[#321c54]"
               >
                 Trigger Raid Alert
               </button>
@@ -450,7 +417,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                     'Your matching action energy is fully recharged to 100%!'
                   )
                 }
-                className="flex-1 py-1.5 bg-[#0e173b] border border-indigo-400/40 text-cyan-300 rounded-lg font-headline text-[9px] font-bold uppercase text-center hover:bg-indigo-900"
+                className="flex-1 py-1.5 bg-[#211238] border border-[rgba(196,167,255,0.20)] text-[#39D5E8] rounded-lg font-headline text-[9px] font-bold uppercase text-center hover:bg-[#321c54]"
               >
                 Trigger Energy Alert
               </button>
@@ -460,12 +427,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* Reset Progress Section */}
-      
-      <div className="bg-[#142054] border border-rose-500/40 rounded-2xl p-4 flex items-center justify-between shadow-[0_4px_20px_rgba(244,63,94,0.15)]">
-        
-      <div>
+      <div className="bg-[#29203D] border border-rose-500/40 rounded-2xl p-4 flex items-center justify-between shadow-[0_4px_20px_rgba(244,63,94,0.15)]">
+        <div>
           <h5 className="font-headline font-bold text-xs uppercase leading-none text-rose-400">Reset Career</h5>
-          <p className="text-[10px] text-violet-300 mt-0.5">Clear all saved progress and reset player account</p>
+          <p className="text-[10px] text-[#C6BDD9] mt-0.5">Clear all saved progress and reset player account</p>
         </div>
         <button
           onClick={() => {

@@ -1,4 +1,4 @@
-import { Level, GemType, DailyLoginReward, Mission } from './types';
+import { Level, GemType, DailyLoginReward, Mission, StreakBonus } from './types';
 
 const GEM_TYPES: GemType[] = ['ruby', 'sapphire', 'emerald', 'topaz', 'amethyst', 'prism'];
 
@@ -56,6 +56,95 @@ export const DAILY_LOGIN_REWARDS: DailyLoginReward[] = [
   { day: 6, rewardDescription: 'Hammer + Undo Boosters', coins: 200, boosters: { hammer: 1, undo: 1 } },
   { day: 7, rewardDescription: 'Grand Treasure: 1,000 Coins, 25 Diamonds & Rainbow Surge!', coins: 1000, diamonds: 25, boosters: { rainbow: 1, hammer: 1, shuffle: 1, hint: 1, undo: 1 } },
 ];
+
+export const STREAK_BONUSES: Record<number, StreakBonus> = {
+  3: {
+    days: 3,
+    title: '3-Day Arcane Streak',
+    coins: 300,
+    diamonds: 10,
+    boosters: { hint: 1 },
+    badge: '🔥 3 Days',
+  },
+  5: {
+    days: 5,
+    title: '5-Day Celestial Streak',
+    coins: 600,
+    diamonds: 20,
+    boosters: { hammer: 1, shuffle: 1 },
+    badge: '⚡ 5 Days',
+  },
+  7: {
+    days: 7,
+    title: '7-Day Grand Master Streak',
+    coins: 1200,
+    diamonds: 50,
+    boosters: { rainbow: 1, hammer: 1, shuffle: 1, hint: 1, undo: 1 },
+    badge: '👑 7 Days',
+  },
+};
+
+export const getStreakBonus = (streakDays: number): StreakBonus | null => {
+  if (streakDays === 3) return STREAK_BONUSES[3];
+  if (streakDays === 5) return STREAK_BONUSES[5];
+  if (streakDays >= 7 && streakDays % 7 === 0) {
+    return {
+      ...STREAK_BONUSES[7],
+      days: streakDays,
+      title: `${streakDays}-Day Grand Master Streak`,
+    };
+  }
+  return null;
+};
+
+export const calculateDailyStreak = (lastClaimDate: string | null, prevStreak: number = 0): {
+  currentStreak: number;
+  isClaimedToday: boolean;
+  canExtendStreak: boolean;
+  nextStreakOnClaim: number;
+} => {
+  const todayStr = new Date().toISOString().split('T')[0];
+  if (!lastClaimDate) {
+    return {
+      currentStreak: 0,
+      isClaimedToday: false,
+      canExtendStreak: true,
+      nextStreakOnClaim: 1,
+    };
+  }
+
+  if (lastClaimDate === todayStr) {
+    return {
+      currentStreak: Math.max(1, prevStreak),
+      isClaimedToday: true,
+      canExtendStreak: false,
+      nextStreakOnClaim: Math.max(1, prevStreak),
+    };
+  }
+
+  // Calculate day difference
+  const dToday = new Date(todayStr + 'T00:00:00Z').getTime();
+  const dLast = new Date(lastClaimDate + 'T00:00:00Z').getTime();
+  const diffDays = Math.round((dToday - dLast) / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 1) {
+    // Intact streak! Claiming will advance the streak count
+    return {
+      currentStreak: Math.max(1, prevStreak),
+      isClaimedToday: false,
+      canExtendStreak: true,
+      nextStreakOnClaim: Math.max(1, prevStreak) + 1,
+    };
+  } else {
+    // Missed a day: streak resets on next claim
+    return {
+      currentStreak: 0,
+      isClaimedToday: false,
+      canExtendStreak: true,
+      nextStreakOnClaim: 1,
+    };
+  }
+};
 
 export const DEFAULT_MISSIONS: Mission[] = [
   {

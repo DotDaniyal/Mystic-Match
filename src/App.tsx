@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { User, Home, Map as MapIcon, Settings as SettingsIcon, WifiOff, Play, LogOut } from 'lucide-react';
 import { GameState, BoosterType, BoosterShopItem, DailyLoginReward, Mission } from './types';
-import { INITIAL_LEVELS, DEFAULT_MISSIONS } from './data';
+import { INITIAL_LEVELS, DEFAULT_MISSIONS, calculateDailyStreak, getStreakBonus } from './data';
 import { PlayerSetupOverlay } from './components/PlayerSetupOverlay';
 import { PlayerProfileModal } from './components/PlayerProfileModal';
 import { HomeView } from './components/HomeView';
@@ -68,6 +68,7 @@ export default function App() {
       },
       missions: DEFAULT_MISSIONS,
       dailyLoginDay: 1,
+      dailyStreak: 0,
       lastDailyLoginDate: null,
       achievements: [
         { id: 'first_match', title: 'First Match', description: 'Make your first crystal match!', isUnlocked: false, icon: '✨', rewardType: 'coins', rewardValue: 100 },
@@ -97,9 +98,11 @@ export default function App() {
           },
           missions: parsed.missions?.length ? parsed.missions : defaultState.missions,
           dailyLoginDay: parsed.dailyLoginDay || 1,
+          dailyStreak: parsed.dailyStreak || (parsed.lastClaimedDaily ? 1 : 0),
           lastDailyLoginDate: parsed.lastDailyLoginDate ?? null,
           winStreak: parsed.winStreak || 0,
           totalMatchesMade: parsed.totalMatchesMade || 0,
+          maxCombo: parsed.maxCombo || 1,
           achievements: parsed.achievements?.length ? parsed.achievements : defaultState.achievements,
           lastClaimedDaily: parsed.lastClaimedDaily ?? null,
           diamonds: syncedDiamonds,
@@ -122,6 +125,7 @@ export default function App() {
 
   // Track if a level is currently active and in progress
   const [isLevelInProgress, setIsLevelInProgress] = useState<boolean>(false);
+  const [activeComboMultiplier, setActiveComboMultiplier] = useState<number>(1);
   const [pendingNavigation, setPendingNavigation] = useState<'home' | 'map' | 'settings' | 'profile' | null>(null);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState<boolean>(false);
 
@@ -291,53 +295,18 @@ export default function App() {
     }
   }, [gameState.activeTab]);
 
-  // Screen Orientation API: Attempt programmatic forced portrait-only lock
+  // Unlock any previous screen orientation restrictions so all mobile, flip, fold, and landscape layouts work seamlessly
   useEffect(() => {
-    const lockPortraitOrientation = async () => {
-      try {
-        if (typeof window !== 'undefined' && 'screen' in window && 'orientation' in window.screen) {
-          const orientation = window.screen.orientation as any;
-          if (typeof orientation.lock === 'function') {
-            await orientation.lock('portrait');
-          }
+    try {
+      if (typeof window !== 'undefined' && 'screen' in window && 'orientation' in window.screen) {
+        const orientation = window.screen.orientation as any;
+        if (typeof orientation.unlock === 'function') {
+          orientation.unlock();
         }
-      } catch (err) {
-        // Many browsers require fullscreen or user gesture before screen.orientation.lock() succeeds;
-        // The CSS layer handles instantaneous landscape masking gracefully.
       }
-    };
-
-    lockPortraitOrientation();
-
-    // Re-attempt lock whenever document visibility or fullscreen state changes
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        lockPortraitOrientation();
-      }
-    };
-
-    const handleFullscreenChange = () => {
-      lockPortraitOrientation();
-    };
-
-    // User gesture listener to opportunistically lock orientation on first touch/click
-    const handleFirstUserInteraction = () => {
-      lockPortraitOrientation();
-      window.removeEventListener('click', handleFirstUserInteraction);
-      window.removeEventListener('touchstart', handleFirstUserInteraction);
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    window.addEventListener('click', handleFirstUserInteraction, { once: true });
-    window.addEventListener('touchstart', handleFirstUserInteraction, { once: true });
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      window.removeEventListener('click', handleFirstUserInteraction);
-      window.removeEventListener('touchstart', handleFirstUserInteraction);
-    };
+    } catch {
+      // Safe fallback
+    }
   }, []);
 
   // Economy: Booster Shop Purchase Handler
@@ -405,10 +374,26 @@ export default function App() {
   // Economy: Daily Login Claim Handler
   const handleClaimDailyLogin = (reward: DailyLoginReward) => {
     const today = new Date().toISOString().split('T')[0];
+    let earnedStreak = 1;
+    let streakBonusEarned: any = null;
+
     setGameState((prev) => {
+      const streakInfo = calculateDailyStreak(prev.lastClaimedDaily, prev.dailyStreak || 0);
+      earnedStreak = streakInfo.nextStreakOnClaim;
+      const streakBonus = getStreakBonus(earnedStreak);
+      streakBonusEarned = streakBonus;
+
       const updatedBoosters = { ...prev.boostersCount };
       if (reward.boosters) {
         Object.entries(reward.boosters).forEach(([key, val]) => {
+          const bKey = key as BoosterType;
+          if (val) updatedBoosters[bKey] = (updatedBoosters[bKey] || 0) + val;
+        });
+      }
+
+      // Add streak bonus boosters if milestone reached (3, 5, 7 days)
+      if (streakBonus?.boosters) {
+        Object.entries(streakBonus.boosters).forEach(([key, val]) => {
           const bKey = key as BoosterType;
           if (val) updatedBoosters[bKey] = (updatedBoosters[bKey] || 0) + val;
         });
@@ -422,19 +407,31 @@ export default function App() {
         return m;
       });
 
+      const bonusCoins = streakBonus ? streakBonus.coins : 0;
+      const bonusDiamonds = streakBonus ? streakBonus.diamonds : 0;
+
       return {
         ...prev,
-        coins: prev.coins + reward.coins,
-        diamonds: prev.diamonds + (reward.diamonds || 0),
-        gemsCount: prev.gemsCount + (reward.diamonds || 0),
+        coins: prev.coins + reward.coins + bonusCoins,
+        diamonds: prev.diamonds + (reward.diamonds || 0) + bonusDiamonds,
+        gemsCount: prev.gemsCount + (reward.diamonds || 0) + bonusDiamonds,
         boostersCount: updatedBoosters,
         dailyLoginDay: (reward.day % 7) + 1,
+        dailyStreak: earnedStreak,
         lastClaimedDaily: today,
         lastDailyLoginDate: today,
         missions: updatedMissions,
       };
     });
-    triggerPushNotification('Daily Calendar Claimed!', `Received +${reward.coins} Coins!`);
+
+    if (streakBonusEarned) {
+      triggerPushNotification(
+        '🔥 Streak Milestone Reached!',
+        `${streakBonusEarned.title}! +${reward.coins + streakBonusEarned.coins} Coins, +${streakBonusEarned.diamonds} Diamonds & Boosters!`
+      );
+    } else {
+      triggerPushNotification('Daily Calendar Claimed!', `Received +${reward.coins} Coins! (Streak: ${earnedStreak} Days 🔥)`);
+    }
   };
 
   // Economy: Missions / Bounties Claim Handler
@@ -480,10 +477,17 @@ export default function App() {
     triggerPushNotification('Mystic Broadcast Reward', `+1 ${boosterType.toUpperCase()} booster & +50 coins claimed!`);
   };
 
-  // Mission Tracking: Match made
-  const handleMatchMade = (count: number) => {
+  // Mission & Combo Tracking: Match made
+  const handleMatchMade = (count: number, comboMultiplier: number = 1) => {
+    setActiveComboMultiplier(comboMultiplier);
+
+    let unlockedFirstMatch: { title: string; description: string } | null = null;
+    let unlockedComboMaster: { title: string; description: string } | null = null;
+
     setGameState((prev) => {
       const nextTotal = (prev.totalMatchesMade || 0) + count;
+      const nextMaxCombo = Math.max(prev.maxCombo || 1, comboMultiplier);
+
       const updatedMissions = (prev.missions || []).map((m) => {
         if (m.type === 'match_gems') {
           const nextCur = Math.min(m.target, m.current + count);
@@ -492,12 +496,45 @@ export default function App() {
         return m;
       });
 
+      let currentAchievements = [...(prev.achievements || [])];
+      let bonusCoins = 0;
+
+      const firstMatchAch = currentAchievements.find((a) => a.id === 'first_match');
+      if (firstMatchAch && !firstMatchAch.isUnlocked) {
+        currentAchievements = currentAchievements.map((a) =>
+          a.id === 'first_match' ? { ...a, isUnlocked: true, unlockedAt: new Date().toISOString() } : a
+        );
+        bonusCoins += firstMatchAch.rewardValue;
+        unlockedFirstMatch = { title: firstMatchAch.title, description: firstMatchAch.description };
+      }
+
+      if (comboMultiplier >= 4) {
+        const comboAch = currentAchievements.find((a) => a.id === 'combo_master');
+        if (comboAch && !comboAch.isUnlocked) {
+          currentAchievements = currentAchievements.map((a) =>
+            a.id === 'combo_master' ? { ...a, isUnlocked: true, unlockedAt: new Date().toISOString() } : a
+          );
+          bonusCoins += comboAch.rewardValue;
+          unlockedComboMaster = { title: comboAch.title, description: comboAch.description };
+        }
+      }
+
       return {
         ...prev,
+        coins: prev.coins + bonusCoins,
         totalMatchesMade: nextTotal,
+        maxCombo: nextMaxCombo,
         missions: updatedMissions,
+        achievements: currentAchievements,
       };
     });
+
+    if (unlockedFirstMatch) {
+      triggerPushNotification('Achievement Unlocked!', `✨ ${(unlockedFirstMatch as { title: string; description: string }).title}: ${(unlockedFirstMatch as { title: string; description: string }).description}`);
+    }
+    if (unlockedComboMaster) {
+      triggerPushNotification('Achievement Unlocked!', `💥 ${(unlockedComboMaster as { title: string; description: string }).title}: ${(unlockedComboMaster as { title: string; description: string }).description}`);
+    }
   };
 
   // Reset progress logic
@@ -553,6 +590,7 @@ export default function App() {
       },
       missions: DEFAULT_MISSIONS,
       dailyLoginDay: 1,
+      dailyStreak: 0,
       lastDailyLoginDate: null,
       achievements: [
         { id: 'first_match', title: 'First Match', description: 'Make your first crystal match!', isUnlocked: false, icon: '✨', rewardType: 'coins', rewardValue: 100 },
@@ -570,11 +608,11 @@ export default function App() {
   return (
     <div
       id="main-viewport-container"
-      className="fixed inset-0 w-full h-full h-[100dvh] font-body text-white bg-gradient-to-b from-[#101b44] via-[#0d163a] to-[#09102c] flex items-center justify-center p-0 md:p-4 overflow-hidden select-none"
+      className="fixed inset-0 w-full h-full h-[100dvh] font-body text-[#F8F5FF] bg-gradient-to-b from-[#211238] via-[#18102E] to-[#10152D] flex items-center justify-center p-0 md:p-4 overflow-hidden select-none"
     >
-      {/* Dynamic atmospheric celestial glow effects */}
-      <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-purple-600/20 rounded-full blur-[100px] pointer-events-none" />
+      {/* Controlled atmospheric ambient glow */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#7138C8]/15 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#39D5E8]/10 rounded-full blur-[100px] pointer-events-none" />
 
       {/* New Player Account Setup Overlay */}
       {!gameState.name && (
@@ -672,25 +710,25 @@ export default function App() {
               initial={{ scale: 0.8, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.8, y: 20 }}
-              className="relative w-full max-w-sm bg-gradient-to-b from-[#1e2961] via-[#15204c] to-[#0d1333] border-2 border-amber-400 rounded-2xl p-6 text-center shadow-[0_0_50px_rgba(251,191,36,0.6)] animate-glow-flare"
+              className="relative w-full max-w-sm bg-gradient-to-b from-[#29203D] via-[#211238] to-[#10152D] border-2 border-[#F5C76B] rounded-2xl p-6 text-center shadow-[0_0_50px_rgba(245,199,107,0.4)] animate-glow-flare"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Confetti burst elements */}
               <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 pointer-events-none overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-amber-400 via-cyan-400 to-purple-500 rounded-full blur-xl opacity-60 animate-ping" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#F5C76B] via-[#39D5E8] to-[#A855F7] rounded-full blur-xl opacity-60 animate-ping" />
               </div>
 
               <div className="text-4xl mb-2 animate-bounce">🎉</div>
-              <h2 className="font-headline font-black text-2xl text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-cyan-300 uppercase tracking-wider mb-1">
+              <h2 className="font-headline font-black text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#F5C76B] via-[#F8F5FF] to-[#39D5E8] uppercase tracking-wider mb-1">
                 Level Up!
               </h2>
-              <p className="text-violet-300 text-xs mb-4">
+              <p className="text-[#C6BDD9] text-xs mb-4">
                 You have crossed the XP threshold and advanced your arcane rank!
               </p>
 
-              <div className="my-6 inline-flex items-center justify-center gap-3 bg-[#10193d] border-2 border-cyan-400/80 px-6 py-3 rounded-xl shadow-[0_0_20px_rgba(34,211,238,0.4)]">
-                <span className="text-xs uppercase text-cyan-300 font-bold">New Rank:</span>
-                <span className="font-headline font-black text-2xl text-amber-300">LVL {levelUpPopup.level}</span>
+              <div className="my-6 inline-flex items-center justify-center gap-3 bg-[#211238] border-2 border-[#39D5E8]/80 px-6 py-3 rounded-xl shadow-[0_0_20px_rgba(57,213,232,0.35)]">
+                <span className="text-xs uppercase text-[#39D5E8] font-bold">New Rank:</span>
+                <span className="font-headline font-black text-2xl text-[#F5C76B]">LVL {levelUpPopup.level}</span>
               </div>
 
               <div className="mt-4">
@@ -700,7 +738,7 @@ export default function App() {
                     triggerHapticFeedback('win');
                     setLevelUpPopup(null);
                   }}
-                  className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-[#0c1333] font-headline font-black rounded-xl shadow-[0_0_20px_rgba(251,191,36,0.5)] transition-all cursor-pointer active:scale-95"
+                  className="w-full py-3 bg-gradient-to-r from-[#F5C76B] to-[#F18BCB] hover:brightness-110 text-[#211238] font-headline font-black rounded-xl shadow-[0_0_20px_rgba(245,199,107,0.4)] transition-all cursor-pointer active:scale-95"
                 >
                   Continue Journey ⚡
                 </button>
@@ -724,20 +762,20 @@ export default function App() {
       {/* Forced Portrait Orientation Lock Layer (Encourages rotation in landscape) */}
       <OrientationLockOverlay />
 
-      {/* Primary Mobile-first Responsive Container */}
-      <div className="w-full h-[100dvh] md:[@media(min-height:600px)]:max-w-md md:[@media(min-height:600px)]:mx-auto md:[@media(min-height:600px)]:h-[94vh] md:[@media(min-height:600px)]:max-h-[890px] md:[@media(min-height:600px)]:rounded-3xl md:[@media(min-height:600px)]:border-2 border-0 border-indigo-500/50 relative flex flex-col overflow-hidden select-none shadow-[0_0_50px_rgba(59,130,246,0.3)]">
+      {/* Primary Multi-Device Responsive Container (Standard Mobile, Flip Cover/Flex, Fold Outer/Inner, Landscape & Desktop) */}
+      <div className="app-shell-container select-none shadow-[0_0_50px_rgba(59,130,246,0.3)]">
         {/* Responsive Header (Hidden during active gameplay to maximize board canvas and avoid duplicate headers) */}
         {gameState.activeTab !== 'game' && (
-          <header className="shrink-0 w-full z-30 bg-[#111a44]/95 backdrop-blur-md border-b-2 border-indigo-500/40 pt-safe">
-            <div className="h-14 sm:h-16 px-1.5 sm:px-3 flex items-center justify-between flex-nowrap gap-1">
+          <header className="shrink-0 w-full z-30 bg-[#18102E]/95 backdrop-blur-md border-b border-[rgba(196,167,255,0.20)] pt-safe pl-safe pr-safe">
+            <div className="compact-header h-12 sm:h-15 px-1.5 sm:px-3 flex items-center justify-between flex-nowrap gap-1">
               <div
                 onClick={() => handleNavigation('home')}
                 className="flex items-center gap-1.5 sm:gap-2 cursor-pointer group min-w-0"
               >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm sm:text-lg shadow-[0_0_12px_rgba(34,211,238,0.5)] border border-cyan-300 shrink-0">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-[#7138C8] to-[#A855F7] flex items-center justify-center text-sm sm:text-lg shadow-[0_0_12px_rgba(113,56,200,0.4)] border border-[rgba(196,167,255,0.35)] shrink-0">
                   🔮
                 </div>
-                <span className="font-headline font-black uppercase tracking-wider text-xs sm:text-sm text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-cyan-300 group-hover:brightness-110 transition-all truncate">
+                <span className="font-headline font-black uppercase tracking-wider text-xs sm:text-sm text-transparent bg-clip-text bg-gradient-to-r from-[#F5C76B] via-[#C4A7FF] to-[#39D5E8] group-hover:brightness-110 transition-all truncate">
                   Mystic Match
                 </span>
               </div>
@@ -748,16 +786,16 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => { triggerHapticFeedback('click'); setIsShopOpen(true); }}
-                  className="flex items-center gap-1 bg-[#172559] px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl border border-amber-400/50 font-headline font-black text-[10px] sm:text-xs text-amber-300 shadow-sm hover:border-amber-300 cursor-pointer"
+                  className="flex items-center gap-1 bg-[#29203D] px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl border border-[rgba(245,199,107,0.40)] font-headline font-black text-[10px] sm:text-xs text-[#F5C76B] shadow-sm hover:border-[#F5C76B] cursor-pointer transition-colors"
                   title="Open Booster Emporium"
                 >
                   <span>🪙</span>
                   <span>{gameState.coins.toLocaleString()}</span>
-                  <span className="text-[9px] text-amber-400 font-bold ml-0.5">+</span>
+                  <span className="text-[9px] text-[#F5C76B] font-bold ml-0.5">+</span>
                 </button>
 
                 {/* Diamonds Counter */}
-                <div className="flex items-center gap-1 bg-[#172559] px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl border border-cyan-400/50 font-headline font-black text-[10px] sm:text-xs text-cyan-300 shadow-sm">
+                <div className="flex items-center gap-1 bg-[#29203D] px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl border border-[rgba(57,213,232,0.40)] font-headline font-black text-[10px] sm:text-xs text-[#39D5E8] shadow-sm">
                   <span>💎</span>
                   <span>{gameState.diamonds.toLocaleString()}</span>
                 </div>
@@ -766,7 +804,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => handleNavigation('profile')}
-                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 text-white border border-cyan-300 flex items-center justify-center font-headline font-bold text-xs shadow-[0_0_12px_rgba(34,211,238,0.4)] hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-gradient-to-br from-[#7138C8] to-[#A855F7] text-[#F8F5FF] border border-[rgba(196,167,255,0.40)] flex items-center justify-center font-headline font-bold text-xs shadow-[0_0_12px_rgba(113,56,200,0.35)] hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
                   title="Player Profile"
                 >
                   <User size={14} />
@@ -845,6 +883,8 @@ export default function App() {
                   onSetLevelInProgress={setIsLevelInProgress}
                   onOpenShop={() => setIsShopOpen(true)}
                   onMatchMade={handleMatchMade}
+                  comboMultiplier={activeComboMultiplier}
+                  onComboChange={setActiveComboMultiplier}
                   onUpdateBoosters={(newBoosters) => {
                     setGameState((prev) => ({
                       ...prev,
@@ -983,21 +1023,21 @@ export default function App() {
 
         {/* Universal Sticky Bottom Navigation Bar (Hidden during active gameplay to maximize puzzle canvas and eliminate overlaps) */}
         {gameState.activeTab !== 'game' && (
-          <nav className="shrink-0 w-full z-30 bg-[#111a44]/95 backdrop-blur-md border-t-2 border-indigo-500/40 pb-safe">
-            <div className="flex items-center justify-between w-full gap-2 sm:gap-4 h-14 sm:h-16 px-2 sm:px-4">
+          <nav className="shrink-0 w-full z-30 bg-[#18102E]/95 backdrop-blur-md border-t border-[rgba(196,167,255,0.20)] pb-safe pl-safe pr-safe">
+            <div className="compact-nav flex items-center justify-between w-full gap-1.5 sm:gap-4 h-12 sm:h-15 px-1.5 sm:px-4">
               {/* Tab: Home */}
               <button
                 id="home-tab"
                 type="button"
                 onClick={() => handleNavigation('home')}
-                className={`flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 sm:gap-1 min-h-12 h-12 rounded-xl transition-all cursor-pointer ${
+                className={`flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 min-h-[38px] h-10 sm:h-11 rounded-xl transition-all cursor-pointer ${
                   gameState.activeTab === 'home'
-                    ? 'bg-gradient-to-b from-[#223577] to-[#172559] text-amber-300 font-black border-2 border-amber-400/80 shadow-[0_0_15px_rgba(251,191,36,0.3)] -translate-y-0.5'
-                    : 'text-violet-300/80 hover:text-cyan-300 hover:bg-[#162354]/50'
+                    ? 'bg-gradient-to-b from-[#7138C8] to-[#211238] text-[#F5C76B] font-black border border-[#F5C76B]/70 shadow-[0_0_15px_rgba(245,199,107,0.25)] -translate-y-0.5'
+                    : 'text-[#C6BDD9]/80 hover:text-[#39D5E8] hover:bg-[#29203D]/60'
                 }`}
               >
-                <Home size={18} />
-                <span className="text-[8.5px] sm:text-[9.5px] uppercase font-headline font-bold tracking-wider leading-none">Home</span>
+                <Home size={16} />
+                <span className="text-[8px] sm:text-[9.5px] uppercase font-headline font-bold tracking-wider leading-none truncate">Home</span>
               </button>
 
               {/* Tab: Map (Primary Gateway to all levels) */}
@@ -1005,14 +1045,14 @@ export default function App() {
                 id="map-tab"
                 type="button"
                 onClick={() => handleNavigation('map')}
-                className={`flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 sm:gap-1 min-h-12 h-12 rounded-xl transition-all cursor-pointer ${
+                className={`flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 min-h-[38px] h-10 sm:h-11 rounded-xl transition-all cursor-pointer ${
                   gameState.activeTab === 'map'
-                    ? 'bg-gradient-to-b from-[#223577] to-[#172559] text-amber-300 font-black border-2 border-amber-400/80 shadow-[0_0_15px_rgba(251,191,36,0.3)] -translate-y-0.5'
-                    : 'text-violet-300/80 hover:text-cyan-300 hover:bg-[#162354]/50'
+                    ? 'bg-gradient-to-b from-[#7138C8] to-[#211238] text-[#F5C76B] font-black border border-[#F5C76B]/70 shadow-[0_0_15px_rgba(245,199,107,0.25)] -translate-y-0.5'
+                    : 'text-[#C6BDD9]/80 hover:text-[#39D5E8] hover:bg-[#29203D]/60'
                 }`}
               >
-                <MapIcon size={18} />
-                <span className="text-[8.5px] sm:text-[9.5px] uppercase font-headline font-bold tracking-wider leading-none">Stages</span>
+                <MapIcon size={16} />
+                <span className="text-[8px] sm:text-[9.5px] uppercase font-headline font-bold tracking-wider leading-none truncate">Stages</span>
               </button>
 
               {/* Tab: Settings (Config) */}
@@ -1020,14 +1060,14 @@ export default function App() {
                 id="settings-tab"
                 type="button"
                 onClick={() => handleNavigation('settings')}
-                className={`flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 sm:gap-1 min-h-12 h-12 rounded-xl transition-all cursor-pointer ${
+                className={`flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 min-h-[38px] h-10 sm:h-11 rounded-xl transition-all cursor-pointer ${
                   gameState.activeTab === 'settings'
-                    ? 'bg-gradient-to-b from-[#223577] to-[#172559] text-amber-300 font-black border-2 border-amber-400/80 shadow-[0_0_15px_rgba(251,191,36,0.3)] -translate-y-0.5'
-                    : 'text-violet-300/80 hover:text-cyan-300 hover:bg-[#162354]/50'
+                    ? 'bg-gradient-to-b from-[#7138C8] to-[#211238] text-[#F5C76B] font-black border border-[#F5C76B]/70 shadow-[0_0_15px_rgba(245,199,107,0.25)] -translate-y-0.5'
+                    : 'text-[#C6BDD9]/80 hover:text-[#39D5E8] hover:bg-[#29203D]/60'
                 }`}
               >
-                <SettingsIcon size={18} />
-                <span className="text-[8.5px] sm:text-[9.5px] uppercase font-headline font-bold tracking-wider leading-none">Config</span>
+                <SettingsIcon size={16} />
+                <span className="text-[8px] sm:text-[9.5px] uppercase font-headline font-bold tracking-wider leading-none truncate">Config</span>
               </button>
             </div>
           </nav>
